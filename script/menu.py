@@ -49,7 +49,7 @@ def checkoutMemoryCard():
             printc("\nIf a memory card has been locked for a long time, consider contacting the person holding the lock.")
         
         # choose the memory card to lock
-        print("\nWhich memory card would you like to checkout?\n")
+        print("\nWhich memory card would you like to checkout?")
         printc(warning, Fore.LIGHTYELLOW_EX)
         ans = input("Selection (Q to quit): ")
         if isQuit(ans):
@@ -138,8 +138,9 @@ def menu():
     'displays the main menu'
     menu_options = [
         ("See existing memory cards", existingMemoryCards),
-        ("Reload memory card data", existingMemoryCards),
-        ("Checkout a memory card", checkoutMemoryCard),
+        ("Reload memory card data", existingMemoryCards), #todo
+        ("Checkout a memory card", checkoutMemoryCard), #todo
+        ("Add new memory card", existingMemoryCards), #todo
         ("Save your changes", reviewChanges)
     ]
 
