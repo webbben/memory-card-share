@@ -28,7 +28,7 @@ def loadMemoryCardData():
     repo.index.commit("save local changes before merging")
 
     # if there's an unsolvable conflict, we will prefer 'theirs' (i.e. the remote's version of the file)
-    repo.remotes.origin.pull(strategy_options='theirs')
+    repo.remotes.origin.pull(strategy_option='theirs')
 
 def getMemoryCardInfo():
     'Gets all the memory cards currently accessible on the machine'
