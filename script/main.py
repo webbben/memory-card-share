@@ -10,7 +10,7 @@ def get_github_username(repo: git.Repo):
     'gets the github username of the user associated with the git configuration'
     username = repo.config_reader().get_value("user", "name")
     if username == "" or username == None:
-        return "unknown-user"
+        return "Player"
     return username
 
 def saveMemoryCardChanges(msg: str = ""):
@@ -33,4 +33,4 @@ def loadMemoryCardData():
     repo.remotes.origin.pull()
 
 if __name__ == "__main__":
-    saveMemoryCardChanges("testing if pushing works properly")
+    saveMemoryCardChanges()
