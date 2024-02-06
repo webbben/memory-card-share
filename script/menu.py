@@ -46,12 +46,14 @@ def checkoutMemoryCard():
                     longLock = True
         
         if longLock:
-            printc("\nIf a memory card has been locked for a long time, consider contacting the person holding the lock.\n")
+            printc("\nIf a memory card has been locked for a long time, consider contacting the person holding the lock.")
         
         # choose the memory card to lock
-        print("Which memory card would you like to checkout?\n")
+        print("\nWhich memory card would you like to checkout?\n")
         printc(warning, Fore.LIGHTYELLOW_EX)
         ans = input("Selection (Q to quit): ")
+        if isQuit(ans):
+            return
         line = readInputNum(ans)
         if line > 0 and line <= len(memoryCardInfo):
             # attempt to checkout card (line-1)
@@ -201,3 +203,7 @@ def readInputNum(s: str):
 def isYes(s: str):
     temp = s.lower()
     return temp == "y" or temp == "yes"
+
+def isQuit(s: str):
+    temp = s.lower()
+    return temp == "q" or temp == "quit"
