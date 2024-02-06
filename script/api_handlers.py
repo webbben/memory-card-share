@@ -19,9 +19,14 @@ def saveMemoryCardChanges(msg: str = ""):
     repo.git.push()
 
 def loadMemoryCardData():
-    'Pulls memory card data from the remote repository to local. Will overwrite any unsaved local changes.'
+    'Pulls memory card data from the remote repository to local. If there is a merge conflict, the remote will be preferred.'
     repo_path = get_project_root()
     repo = git.Repo(repo_path)
+
+    # first, make sure local changes are committed
+    repo.git.add(all=True)
+    repo.index.commit("save local changes before merging")
+
     # if there's an unsolvable conflict, we will prefer 'theirs' (i.e. the remote's version of the file)
     repo.remotes.origin.pull(strategy_options='theirs')
 

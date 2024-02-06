@@ -1,7 +1,65 @@
 from colorama import Fore, Style
 import os
 from datetime import datetime
-from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges
+from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData
+
+def checkoutMemoryCard():
+    clearScreen()
+    # get up to date locks from github
+    printc("Loading data from Github...")
+    loadMemoryCardData()
+
+    done = False
+    warning = ""
+    while not done:
+        clearScreen()
+        displayTitle("Checkout Memory Card")
+        printc("Before playing, you should checkout a memory card to use.")
+        printc("Doing so reserves a lock on it, so others can't use it and possibly overwrite or corrupt your game data.")
+        printc("You are limited to locking 2 memory cards at a time.\n")
+
+        memoryCardInfo = getMemoryCardInfo()
+
+        if len(memoryCardInfo) == 0:
+            print("No memory cards found on Github.")
+            print("Either this is a bug, or all the memory cards somehow got deleted.")
+            print("Tell Ben if this ever happens...")
+            pressAnyKey()
+            return
+        
+        currentTime = datetime.utcnow()
+        longLock = False
+        i = 0
+        for (name, lock_info) in memoryCardInfo:
+            i += 1
+            if lock_info == None:
+                printc(f"[{i}] {name}", Fore.LIGHTGREEN_EX)
+            else:
+                lock_holder = lock_info["lock_holder"]
+                held_since = datetime.utcfromtimestamp(int(lock_info["held_since"]))
+                time_diff = currentTime - held_since
+                hours, remainder = divmod(time_diff, 3600)
+                minutes, _ = divmod(remainder, 60)
+                timeStr = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
+                printc(f"[{i}] {name} [Locked by {lock_holder} for {timeStr}]", Fore.RED)
+                if hours > 2:
+                    longLock = True
+        
+        if longLock:
+            printc("\nIf a memory card has been locked for a long time, consider contacting the person holding the lock.\n")
+        
+        # choose the memory card to lock
+        print("Which memory card would you like to checkout?\n")
+        printc(warning, Fore.LIGHTYELLOW_EX)
+        ans = input("Selection (Q to quit): ")
+        line = readInputNum(ans)
+        if line > 0 and line <= len(memoryCardInfo):
+            # attempt to checkout card (line-1)
+            print("TODO: checkout card")
+            pressAnyKey()
+            return
+        warning = f"Hmm, option \"{ans}\" don't seem right. Make sure you're entering the line number."
+
 
 def existingMemoryCards():
     clearScreen()
@@ -79,7 +137,7 @@ def menu():
     menu_options = [
         ("See existing memory cards", existingMemoryCards),
         ("Reload memory card data", existingMemoryCards),
-        ("Checkout a memory card", existingMemoryCards),
+        ("Checkout a memory card", checkoutMemoryCard),
         ("Save your changes", reviewChanges)
     ]
 
