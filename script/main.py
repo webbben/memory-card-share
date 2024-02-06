@@ -22,3 +22,5 @@ def loadMemoryCardData():
     repo = git.Repo(repo_path)
     repo.remotes.origin.pull()
 
+if __name__ == "__main__":
+    saveMemoryCardChanges("webbben")
