@@ -33,4 +33,4 @@ def loadMemoryCardData():
     repo.remotes.origin.pull()
 
 if __name__ == "__main__":
-    saveMemoryCardChanges("testing fresh install")
+    saveMemoryCardChanges()
