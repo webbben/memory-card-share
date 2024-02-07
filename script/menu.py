@@ -1,14 +1,61 @@
 from colorama import Fore, Style
 import os
 from datetime import datetime
-from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard, get_github_username
+from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard, get_github_username, getUserLocks
+
+def displayMemoryCardReport(lineNumbers = False) -> list:
+    'displays a report of the memory cards. can optionally add line numbers.'
+    memoryCardInfo = getMemoryCardInfo()
+    username = get_github_username()
+    if len(memoryCardInfo) == 0:
+        print("No memory cards found.")
+        print("Either this is a bug, or all the memory cards somehow got deleted.")
+        print("Tell Ben if this ever happens...")
+        pressAnyKey()
+        return []
+    
+    currentTime = datetime.utcnow()
+    longLock = False
+    i = 0
+    for (name, lock_info) in memoryCardInfo:
+        i += 1
+        if lock_info == None:
+            if lineNumbers:
+                printc(f"[{i}] {name}", Fore.LIGHTGREEN_EX)
+            else:
+                printc(name, Fore.LIGHTGREEN_EX)
+        else:
+            lock_holder = lock_info["lock_holder"]
+            held_since = datetime.utcfromtimestamp(int(lock_info["held_since"]))
+            time_diff = currentTime - held_since
+            hours, remainder = divmod(time_diff.total_seconds(), 3600)
+            hours = round(hours)
+            minutes, _ = divmod(remainder, 60)
+            minutes = round(minutes)
+            timeStr = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
+            color = Fore.RED
+            # modify display if its locked by the current user
+            if lock_holder == username:
+                lock_holder = "you"
+                color = Fore.LIGHTGREEN_EX
+            if lineNumbers:
+                printc(f"[{i}] {name} [Locked by {lock_holder} for {timeStr}]", color)
+            else:
+                printc(f"{name} [Locked by {lock_holder} for {timeStr}]", color)
+            if hours > 2:
+                longLock = True
+    
+    if longLock:
+        printc("\nIf a memory card has been locked for a long time, consider contacting the person holding the lock.")
+        printc("If you're holding a lock and you're done with it, go to the \"Save your changes\" or \"Discard changes\" menu.")
+    return memoryCardInfo
+        
 
 def checkoutMemoryCard():
     clearScreen()
     # get up to date locks from github
     printc("Loading data from Github...")
     loadMemoryCardData()
-    username = get_github_username()
 
     done = False
     warning = ""
@@ -19,43 +66,9 @@ def checkoutMemoryCard():
         printc("Doing so reserves a lock on it, so others can't use it and possibly overwrite or corrupt your game data.")
         printc("You are limited to locking 2 memory cards at a time.\n")
 
-        memoryCardInfo = getMemoryCardInfo()
-
+        memoryCardInfo = displayMemoryCardReport(True)
         if len(memoryCardInfo) == 0:
-            print("No memory cards found on Github.")
-            print("Either this is a bug, or all the memory cards somehow got deleted.")
-            print("Tell Ben if this ever happens...")
-            pressAnyKey()
             return
-        
-        currentTime = datetime.utcnow()
-        longLock = False
-        i = 0
-        for (name, lock_info) in memoryCardInfo:
-            i += 1
-            if lock_info == None:
-                printc(f"[{i}] {name}", Fore.LIGHTGREEN_EX)
-            else:
-                lock_holder = lock_info["lock_holder"]
-                held_since = datetime.utcfromtimestamp(int(lock_info["held_since"]))
-                time_diff = currentTime - held_since
-                hours, remainder = divmod(time_diff.total_seconds(), 3600)
-                hours = round(hours)
-                minutes, _ = divmod(remainder, 60)
-                minutes = round(minutes)
-                timeStr = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
-                color = Fore.RED
-                # modify display if its locked by the current user
-                if lock_holder == username:
-                    lock_holder = "you"
-                    color = Fore.LIGHTGREEN_EX
-                printc(f"[{i}] {name} [Locked by {lock_holder} for {timeStr}]", color)
-                if hours > 2:
-                    longLock = True
-        
-        if longLock:
-            printc("\nIf a memory card has been locked for a long time, consider contacting the person holding the lock.")
-            printc("If you're holding a lock and you're done with it, go to the \"Save your changes\" or \"Discard changes\" menu.")
         
         # choose the memory card to lock
         print("\nWhich memory card would you like to checkout?")
@@ -81,47 +94,37 @@ def checkoutMemoryCard():
 
 
 def viewMemoryCards():
+    'displays a simple report of all the memory cards.'
     clearScreen()
     printc("Loading data from github...")
     loadMemoryCardData()
-    username = get_github_username()
+
     clearScreen()
     displayTitle("Memory Cards")
     printc("Below are the existing memory cards.\n")
 
-    memoryCardInfo = getMemoryCardInfo()
-    currentTime = datetime.utcnow()
-    longLock = False
-
-    if len(memoryCardInfo) == 0:
-        print("(No memory card data on your system.)\n")
-    else:
-        for (name, lock_info) in memoryCardInfo:
-            if lock_info == None:
-                printc(name, Fore.LIGHTGREEN_EX)
-            else:
-                lock_holder = lock_info["lock_holder"]
-                held_since = datetime.utcfromtimestamp(int(lock_info["held_since"]))
-                time_diff = currentTime - held_since
-                hours, remainder = divmod(time_diff.total_seconds(), 3600)
-                hours = round(hours)
-                minutes, _ = divmod(remainder, 60)
-                minutes = round(minutes)
-                timeStr = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
-                color = Fore.RED
-                # modify display if its locked by the current user
-                if lock_holder == username:
-                    lock_holder = "you"
-                    color = Fore.LIGHTGREEN_EX
-                printc(f"{name} [Locked by {lock_holder} for {timeStr}]", color)
-                if hours > 2:
-                    longLock = True
-    
-    if longLock:
-        printc("\nIf a memory card has been locked for a long time, consider contacting the lock holder.")
-        printc("If you're holding a lock and you're done with it, go to the \"Save your changes\" or \"Discard changes\" menu.")
+    count = len(displayMemoryCardReport())
+    if count == 0:
+        return
 
     pressAnyKey()
+
+def displayChangesReport(lineNumbers = False) -> int:
+    'shows a report of the files that have changed. can optionally add line numbering.'
+    unsavedChanges = getModifiedMemoryCards()
+    if len(unsavedChanges) == 0:
+        print("No local unsaved changes.\n")
+        pressAnyKey()
+        return 0
+    i = 0
+    for file in unsavedChanges:
+        i += 1
+        if lineNumbers:
+            printc(f"[{i}] {file}", Fore.GREEN)
+        else:
+            printc(file, Fore.GREEN)
+    return len(unsavedChanges)
+
 
 def reviewChanges():
     clearScreen()
@@ -129,13 +132,9 @@ def reviewChanges():
     printc("Below are changes you've made to memory cards that haven't been saved to Github yet.")
     printc("Once you save to Github, the locks on these memory cards will automatically be released too.\n")
 
-    unsavedChanges = getModifiedMemoryCards()
-    if len(unsavedChanges) == 0:
-        print("Everything up to date.\n")
-        pressAnyKey()
+    count = displayChangesReport()
+    if count == 0:
         return
-    for file in unsavedChanges:
-        printc(file, Fore.GREEN)
     
     printc("\nWould you like to save these changes?")
     ans = input(f"[{colorStr("Y", Fore.GREEN)} or {colorStr("N", Fore.RED)}]: ")
@@ -147,6 +146,32 @@ def reviewChanges():
     # attempt to save
     saveMemoryCardChanges()
     printc("Save successful!", Fore.GREEN)
+    pressAnyKey()
+
+def discardChanges():
+    clearScreen()
+    displayTitle("Discard Changes")
+    printc("Below are changes you've made to memory cards that haven't been saved to Github yet.")
+    printc("If you don't want to keep these changes, you can revert the memory cards back to their previous state.")
+    printc("Warning! This will delete your changes!", Fore.RED)
+
+    count = displayChangesReport()
+    if count == 0:
+        return
+
+    printc("\nWould you like to discard these changes?")
+    ans = input(f"[{colorStr("Y", Fore.RED)} or {colorStr("N", Fore.GREEN)}]: ")
+    if isYes(ans):
+        print(f"Confirm that you want to {colorStr("delete", Fore.RED)} these changes (Yes = delete)")
+        ans = input("[Y or N]: ")
+        if isYes(ans):
+            # todo - delete the unsaved data
+            printc("Reversed local unsaved changes!", Fore.GREEN)
+        else:
+            printc("Nothing changed.")
+        pressAnyKey()
+        return
+    printc("Nothing changed.")
     pressAnyKey()
 
 def displayTitle(subtitle: str = ""):
@@ -184,14 +209,18 @@ def bannerLogic():
     remote_changes_count = len(checkForRemoteChanges())
     if remote_changes_count > 0:
         return (f"There are remote changes ({remote_changes_count}). You should pull these to stay up to date.", Fore.YELLOW)
+    username = get_github_username()
+    # warn user if they don't have a username yet
+    if username == "Player":
+        return ("it seems you haven't setup your git name info properly - ask Ben if you need help :)", Fore.YELLOW)
+    return (f"Welcome, {username}", Fore.MAGENTA)
 
 def menu():
     'displays the main menu'
     menu_options = [
-        ("See existing memory cards", viewMemoryCards),
-        ("Reload memory card data", viewMemoryCards), #todo
-        ("Checkout a memory card", checkoutMemoryCard), #todo
-        ("Add new memory card", viewMemoryCards), #todo
+        ("View all memory cards", viewMemoryCards),
+        ("Checkout a memory card", checkoutMemoryCard),
+        ("Create a new memory card", viewMemoryCards), #todo
         ("Save your changes", reviewChanges),
         ("Discard changes", reviewChanges), #todo
     ]
@@ -199,15 +228,18 @@ def menu():
     done = False
     warning = ""
     banner = bannerLogic()
+    lockedCards = getUserLocks()
 
     while not done:
         clearScreen()
         displayTitle()
-        # display if there are remote changes
+        # display info banners, as needed
         if banner:
             printc(banner[0], banner[1])
             print("")
             banner = None
+        if len(lockedCards) > 0:
+            printc(f"You have {len(lockedCards)} memory card(s) checked out.\n", Fore.LIGHTGREEN_EX)
         # display menu options
         optNumber = 0
         for (optionTitle, _) in menu_options:

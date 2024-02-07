@@ -44,6 +44,18 @@ def lockMemoryCard(cardName: str) -> bool:
     push_to_github(f"{username}: Locked {cardName}")
     return True
 
+def getUserLocks() -> list[str]:
+    'returns a list of memory cards the current user has locked'
+    output = []
+    cardInfo = getMemoryCardInfo()
+    username = get_github_username()
+    for (cardName, lockInfo) in cardInfo:
+        if lockInfo:
+            if lockInfo["lock_holder"] == username:
+                output.append(cardName)
+    return output
+
+
 def unlockMemoryCard(cardName: str) -> bool:
     '''unlocks a memory card. only fails if the card wasn't locked to begin with'''
     path = os.path.join('memory-cards', cardName, 'lock.json')
