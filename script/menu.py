@@ -85,7 +85,7 @@ def viewMemoryCards():
     username = get_github_username()
     clearScreen()
     displayTitle("Memory Cards")
-    printc("Below are the existing memory cards.")
+    printc("Below are the existing memory cards.\n")
 
     memoryCardInfo = getMemoryCardInfo()
     currentTime = datetime.utcnow()
