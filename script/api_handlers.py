@@ -56,6 +56,26 @@ def getUserLocks() -> list[str]:
     return output
 
 
+def releaseAllUserLocks() -> bool:
+    '''unlocks all memory cards locked by the current user'''
+    lockedMemoryCards = getUserLocks()
+    if len(lockedMemoryCards) == 0:
+        return True
+    
+    failures = 0
+    for (cardName, _) in lockedMemoryCards:
+        success = unlockMemoryCard(cardName)
+        if not success:
+            failures += 1
+    
+    # push updates to github
+    if failures < len(lockedMemoryCards):
+        push_to_github(f"{get_github_username()}: All locks released")
+
+    if failures > 0:
+        return False
+    return True
+
 def unlockMemoryCard(cardName: str) -> bool:
     '''unlocks a memory card. only fails if the card wasn't locked to begin with'''
     path = os.path.join('memory-cards', cardName, 'lock.json')

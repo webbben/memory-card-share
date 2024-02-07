@@ -1,7 +1,7 @@
 from colorama import Fore, Style
 import os
 from datetime import datetime
-from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard, get_github_username, getUserLocks, get_memory_card_full_path
+from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard, get_github_username, getUserLocks, get_memory_card_full_path, releaseAllUserLocks
 
 def displayMemoryCardReport(lineNumbers = False) -> list:
     'displays a report of the memory cards. can optionally add line numbers.'
@@ -250,13 +250,26 @@ def handleQuit():
     unsaved_changes = getModifiedMemoryCards()
     if len(unsaved_changes) > 0:
         clearScreen()
-        printc("Warning! There are unsaved changes on a memory card. Make sure you save before leaving.", Fore.LIGHTRED_EX)
-        print("")
+        printc("Warning! There are unsaved changes on a memory card.", Fore.LIGHTRED_EX)
+        print("Please handle your unsaved changes before leaving.\n")
         for card in unsaved_changes:
             printc(card, Fore.LIGHTYELLOW_EX)
         print("")
-        ans = input("Continue exiting? [Y or N]: ")
-        return isYes(ans)
+        ans = input("Continue exiting anyway? [Y or N]: ")
+        if isYes(ans):
+            printc("\nOk, but forreal... make sure you come back soon to handle unsaved changes and release memory card locks.")
+            printc("If you don't, eventually your changes may be wiped out and your locks automatically released.")
+            pressAnyKey()
+            return True
+        return False
+    
+    # release any held locks - we can do this safely since there are no unsaved changes
+    success = releaseAllUserLocks()
+    if not success:
+        clearScreen()
+        printc("Warning: a memory card failed to unlock for an unknown reason.", Fore.YELLOW)
+        printc("Tell Ben this happened and he can take a look, but no saved data was lost so no worries.")
+        pressAnyKey()
     return True
 
 def bannerLogic():
