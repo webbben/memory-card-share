@@ -1,13 +1,14 @@
 from colorama import Fore, Style
 import os
 from datetime import datetime
-from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard
+from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard, get_github_username
 
 def checkoutMemoryCard():
     clearScreen()
     # get up to date locks from github
     printc("Loading data from Github...")
     loadMemoryCardData()
+    username = get_github_username()
 
     done = False
     warning = ""
@@ -41,12 +42,18 @@ def checkoutMemoryCard():
                 hours, remainder = divmod(time_diff, 3600)
                 minutes, _ = divmod(remainder, 60)
                 timeStr = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
-                printc(f"[{i}] {name} [Locked by {lock_holder} for {timeStr}]", Fore.RED)
+                color = Fore.RED
+                # modify display if its locked by the current user
+                if lock_holder == username:
+                    lock_holder = "you"
+                    color = Fore.LIGHTGREEN_EX
+                printc(f"[{i}] {name} [Locked by {lock_holder} for {timeStr}]", color)
                 if hours > 2:
                     longLock = True
         
         if longLock:
             printc("\nIf a memory card has been locked for a long time, consider contacting the person holding the lock.")
+            printc("If you're holding a lock and you're done with it, go to the \"Save your changes\" or \"Discard changes\" menu.")
         
         # choose the memory card to lock
         print("\nWhich memory card would you like to checkout?")
@@ -71,11 +78,14 @@ def checkoutMemoryCard():
         warning = f"Hmm, option \"{ans}\" don't seem right. Make sure you're entering the line number."
 
 
-def existingMemoryCards():
+def viewMemoryCards():
     clearScreen()
-    displayTitle("Available Memory Cards")
-    printc("Below are the memory cards you already have on your system.")
-    printc("Load from Github to get the latest data.\n")
+    printc("Loading data from github...")
+    loadMemoryCardData()
+    username = get_github_username()
+    clearScreen()
+    displayTitle("Memory Cards")
+    printc("Below are the existing memory cards.")
 
     memoryCardInfo = getMemoryCardInfo()
     currentTime = datetime.utcnow()
@@ -91,16 +101,23 @@ def existingMemoryCards():
                 lock_holder = lock_info["lock_holder"]
                 held_since = datetime.utcfromtimestamp(int(lock_info["held_since"]))
                 time_diff = currentTime - held_since
-                hours, remainder = divmod(time_diff, 3600)
+                hours, remainder = divmod(time_diff.total_seconds(), 3600)
+                hours = round(hours)
                 minutes, _ = divmod(remainder, 60)
+                minutes = round(minutes)
                 timeStr = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
-                printc(f"{name} [Locked by {lock_holder} for {timeStr}]", Fore.RED)
+                color = Fore.RED
+                # modify display if its locked by the current user
+                if lock_holder == username:
+                    lock_holder = "you"
+                    color = Fore.LIGHTGREEN_EX
+                printc(f"{name} [Locked by {lock_holder} for {timeStr}]", color)
                 if hours > 2:
                     longLock = True
     
     if longLock:
-        printc("\nIf a memory card has been locked for a long time, try reloading from Github.")
-        printc("If it's still locked, then consider contacting the person holding the lock.")
+        printc("\nIf a memory card has been locked for a long time, consider contacting the lock holder.")
+        printc("If you're holding a lock and you're done with it, go to the \"Save your changes\" or \"Discard changes\" menu.")
 
     pressAnyKey()
 
@@ -169,10 +186,10 @@ def bannerLogic():
 def menu():
     'displays the main menu'
     menu_options = [
-        ("See existing memory cards", existingMemoryCards),
-        ("Reload memory card data", existingMemoryCards), #todo
+        ("See existing memory cards", viewMemoryCards),
+        ("Reload memory card data", viewMemoryCards), #todo
         ("Checkout a memory card", checkoutMemoryCard), #todo
-        ("Add new memory card", existingMemoryCards), #todo
+        ("Add new memory card", viewMemoryCards), #todo
         ("Save your changes", reviewChanges),
         ("Discard changes", reviewChanges), #todo
     ]
