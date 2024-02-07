@@ -68,11 +68,11 @@ def checkoutMemoryCard():
             # attempt to check out this memory card
             cardName = memoryCardInfo[line - 1][0]
             if lockMemoryCard(cardName):
-                printc(f"Successfully locked {cardName}!", Fore.GREEN)
+                printc(f"\nSuccessfully locked {cardName}!", Fore.GREEN)
                 print("You're free to play with this memory card in Dolphin now.")
                 print("(Don't forget to save to Github and unlock when you're done)")
             else:
-                printc(f"Failed to lock {cardName}.")
+                printc(f"\nFailed to lock {cardName}.")
                 print("Is it currently locked?")
             pressAnyKey()
             return
