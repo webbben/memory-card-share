@@ -285,10 +285,10 @@ def menu():
     done = False
     warning = ""
     banner = bannerLogic()
-    lockedCards = getUserLocks()
 
     while not done:
         clearScreen()
+        lockedCards = getUserLocks()
         displayTitle()
         # display info banners, as needed
         if banner:
