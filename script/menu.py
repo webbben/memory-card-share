@@ -39,8 +39,10 @@ def checkoutMemoryCard():
                 lock_holder = lock_info["lock_holder"]
                 held_since = datetime.utcfromtimestamp(int(lock_info["held_since"]))
                 time_diff = currentTime - held_since
-                hours, remainder = divmod(time_diff, 3600)
+                hours, remainder = divmod(time_diff.total_seconds(), 3600)
+                hours = round(hours)
                 minutes, _ = divmod(remainder, 60)
+                minutes = round(minutes)
                 timeStr = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
                 color = Fore.RED
                 # modify display if its locked by the current user
