@@ -247,7 +247,7 @@ def menu():
             optionTitle = menu_opt[0]
             # a third value represents a group header
             if len(menu_opt) == 3:
-                printc("    " + menu_opt[2])
+                printc(" *  " + menu_opt[2])
             optNumber += 1
             print(f"[{optNumber}] {optionTitle}")
         print("[Q] Quit")
