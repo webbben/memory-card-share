@@ -1,7 +1,7 @@
 from colorama import Fore, Style
 import os
 from datetime import datetime
-from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData
+from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard
 
 def checkoutMemoryCard():
     clearScreen()
@@ -56,10 +56,18 @@ def checkoutMemoryCard():
             return
         line = readInputNum(ans)
         if line > 0 and line <= len(memoryCardInfo):
-            # attempt to checkout card (line-1)
-            print("TODO: checkout card")
+            # attempt to check out this memory card
+            cardName = memoryCardInfo[line - 1][0]
+            if lockMemoryCard(cardName):
+                printc(f"Successfully locked {cardName}!", Fore.GREEN)
+                print("You're free to play with this memory card in Dolphin now.")
+                print("(Don't forget to save to Github and unlock when you're done)")
+            else:
+                printc(f"Failed to lock {cardName}.")
+                print("Is it currently locked?")
             pressAnyKey()
             return
+        # if the input wasn't valid, notify the user
         warning = f"Hmm, option \"{ans}\" don't seem right. Make sure you're entering the line number."
 
 
@@ -134,6 +142,30 @@ def displayTitle(subtitle: str = ""):
         printc(padding + subtitle, Fore.CYAN)
     print(underline + "\n")
 
+def handleQuit():
+    'handles quitting and leaving the menu'
+    # returns True if quitting, False if not
+    # make sure there are no unsaved changes
+    unsaved_changes = getModifiedMemoryCards()
+    if len(unsaved_changes) > 0:
+        clearScreen()
+        printc("Warning! There are unsaved changes on a memory card. Make sure you save before leaving.", Fore.LIGHTRED_EX)
+        print("")
+        for card in unsaved_changes:
+            printc(card, Fore.LIGHTYELLOW_EX)
+        print("")
+        ans = input("Continue exiting? [Y or N]: ")
+        return isYes(ans)
+    return True
+
+def bannerLogic():
+    # check if the user has memory cards checked out
+    # todo
+    # check if there are changes in the remote repo
+    remote_changes_count = len(checkForRemoteChanges())
+    if remote_changes_count > 0:
+        return (f"There are remote changes ({remote_changes_count}). You should pull these to stay up to date.", Fore.YELLOW)
+
 def menu():
     'displays the main menu'
     menu_options = [
@@ -141,17 +173,23 @@ def menu():
         ("Reload memory card data", existingMemoryCards), #todo
         ("Checkout a memory card", checkoutMemoryCard), #todo
         ("Add new memory card", existingMemoryCards), #todo
-        ("Save your changes", reviewChanges)
+        ("Save your changes", reviewChanges),
+        ("Discard changes", reviewChanges), #todo
     ]
 
     done = False
     warning = ""
+    banner = bannerLogic()
 
     while not done:
         clearScreen()
-
-        # display main menu
         displayTitle()
+        # display if there are remote changes
+        if banner:
+            printc(banner[0], banner[1])
+            print("")
+            banner = None
+        # display menu options
         optNumber = 0
         for (optionTitle, _) in menu_options:
             optNumber += 1
@@ -162,11 +200,16 @@ def menu():
         # handle user input
         action = input("Option: ")
         warning = ""
-        if action.lower() == 'q':
-            return False
+
+        # make sure everything is set before quitting
+        if isQuit(action):
+            if handleQuit():
+                return False
+            continue
+
+        # execute the entered option
         line = readInputNum(action)
         if line > 0 and line <= len(menu_options):
-            # execute menu function for given line
             menu_options[line - 1][1]()
         else:
             warning = f"Huh, option \"{action}\" doesn't seem to be valid. Try again?"
