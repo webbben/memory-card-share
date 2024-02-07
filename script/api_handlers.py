@@ -19,9 +19,8 @@ def checkForRemoteChanges():
     # compare local files to remote
     local_commit = repo.head.commit
     remote_commit = repo.commit("origin/master")
-    diff = repo.commit(f"{local_commit.hexsha}..{remote_commit.hexsha}").diff()
-    changed_cards = [item.a_path for item in diff if 'memory-card' in item.a_path]
-
+    diff = repo.git.diff(f"{local_commit.hexsha}..{remote_commit.hexsha}", "--name-only").splitlines()
+    changed_cards = [item for item in diff if 'memory-cards' in item]
     return changed_cards
 
 def lockMemoryCard(cardName: str) -> bool:
