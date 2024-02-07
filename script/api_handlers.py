@@ -63,8 +63,7 @@ def saveMemoryCardChanges(msg: str = ""):
     'Pushes any existing changes to local memory cards to the remote repo'
     if msg == "":
         msg = "Saved data to memory card in slot A"
-    repo = getRepo()
-    user = get_github_username(repo)
+    user = get_github_username()
     commitMessage = f"{user}: {msg}"
     push_to_github(commitMessage)
 
@@ -150,8 +149,9 @@ def push_to_github(commitMessage: str):
 def get_project_root():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-def get_github_username(repo: git.Repo) -> str:
+def get_github_username() -> str:
     'gets the github username of the user associated with the git configuration'
+    repo = getRepo()
     username = repo.config_reader().get_value("user", "name")
     if username == "" or username == None:
         return "Player"
