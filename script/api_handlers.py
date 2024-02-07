@@ -103,12 +103,12 @@ def getMemoryCardInfo():
     return output
 
 def getModifiedMemoryCards():
-    'returns a list of memory cards (and their subdirectories) that have changes'
+    'returns a list of memory cards that have changes'
     repo = git.Repo(get_project_root())
     repo.remotes.origin.fetch()
 
     # check for changed memory cards among the modified files
-    changedFiles = [item.a_path for item in repo.index.diff(None)]
+    changedFiles = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
     memoryCards = [file.split('memory-cards')[1] for file in changedFiles if 'memory-cards' in file]
 
     return memoryCards
