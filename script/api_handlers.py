@@ -63,7 +63,7 @@ def releaseAllUserLocks() -> bool:
         return True
     
     failures = 0
-    for (cardName, _) in lockedMemoryCards:
+    for cardName in lockedMemoryCards:
         success = unlockMemoryCard(cardName)
         if not success:
             failures += 1
