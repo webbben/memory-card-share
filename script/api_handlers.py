@@ -1,7 +1,7 @@
 import git
 import os
 import json
-from datetime import datetime
+import time
 
 REPO_URL = "https://github.com/webbben/memory-card-share.git"
 
@@ -35,7 +35,7 @@ def lockMemoryCard(cardName: str) -> bool:
     username = get_github_username()
     lock_data = {
         "lock_holder": username,
-        "held_since": datetime.utcnow()
+        "held_since": int(time.time())
     }
     with open(path, 'w') as json_file:
         json.dump(lock_data, json_file, indent=2)
