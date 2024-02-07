@@ -218,10 +218,10 @@ def bannerLogic():
 def menu():
     'displays the main menu'
     menu_options = [
-        ("View all memory cards", viewMemoryCards),
+        ("View all memory cards", viewMemoryCards, "Memory Card Management"),
         ("Checkout a memory card", checkoutMemoryCard),
         ("Create a new memory card", viewMemoryCards), #todo
-        ("Save your changes", reviewChanges),
+        ("Save your changes", reviewChanges, "Done Playing?"),
         ("Discard changes", reviewChanges), #todo
     ]
 
@@ -240,9 +240,14 @@ def menu():
             banner = None
         if len(lockedCards) > 0:
             printc(f"You have {len(lockedCards)} memory card(s) checked out.\n", Fore.LIGHTGREEN_EX)
+        
         # display menu options
         optNumber = 0
-        for (optionTitle, _) in menu_options:
+        for menu_opt in menu_options:
+            optionTitle = menu_opt[0]
+            # a third value represents a group header
+            if len(menu_opt) == 3:
+                printc("    " + menu_opt[2])
             optNumber += 1
             print(f"[{optNumber}] {optionTitle}")
         print("[Q] Quit")
