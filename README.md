@@ -14,9 +14,12 @@ These are the dependencies:
 * Python 3 - many operating systems come with this pre-installed
 * pip - Python's package manager. If you have Python you may have this already too.
 * pipenv - a python package that handles making virtual environments for code dependencies. Easy to install using pip.
+* git - version control software that effectively powers this memory card sharing system.
 
-**I made some shell scripts to automate installation of all these dependencies!** Go to the /install folder
-if you'd like to use those. If you have trouble with them, you can also use the manual instructions provided below.
+```diff
+@@ I made some shell scripts to automate installation of all these dependencies! Go to the /install folder @@
+@@ if you'd like to use those. If you have trouble with them, you can also use the manual instructions provided below. @@
+```
 
 ### Installing Python
 If you're not sure whether or not you have python installed already, try one of these commands in your terminal:
@@ -111,3 +114,33 @@ If you're on windows, you can enter this in the Git Bash terminal. Unix-based sy
 ```shell
 git config --global credential.helper manager
 ```
+
+### Using this program!
+This is the moment we've all been waiting for.  Sorry if the setup has been massive, I kind of forgot how many little things go into using Python, git, github etc.
+
+#### Display Name
+First, let's set up your display name in git.  This will be what other users see you as in our little program:
+(Windows users can once again use the Git Bash terminal for these git related commands)
+```shell
+git config --global user.name "Your Name"
+```
+to confirm it worked, you can enter:
+```shell
+git config user.name
+```
+
+There are lots of other config options you can look at if you want, via `git config --list`.
+
+#### Downloading this repository
+In your terminal (Git Bash if on windows), find a location in your computer that you want to download this program to.  It will create a folder,
+and it will be where the memory card files are stored to.
+
+enter this command to "clone" this repository:
+```shell
+git clone https://github.com/webbben/memory-card-share.git
+```
+
+now, you should see a folder named after this repository, and inside there should be folders for `/memory-cards`, `/scripts`, and `/install`.
+You're ready now!  You can either open the folder in a regular file explorer, or keep using the command line.  
+
+From here, you can run the program by running `main.py` inside the `/scripts` folder.
