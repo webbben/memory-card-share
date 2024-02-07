@@ -16,7 +16,13 @@ if ! command -v pipenv &>/dev/null; then
     pip install --user pipenv
 fi
 
+# Install Git
+if ! command -v git &>/dev/null; then
+    brew install git
+fi
+
 # Confirm installation
 python3 --version
 pip --version
 pipenv --version
+git --version

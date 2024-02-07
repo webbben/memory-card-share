@@ -19,7 +19,15 @@ if (-not (Get-Command pipenv -ErrorAction SilentlyContinue)) {
     pip install pipenv
 }
 
+# Install Git
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/Git-2.37.0-64-bit.exe" -OutFile "git-installer.exe"
+    Start-Process -Wait -FilePath "git-installer.exe"
+    Remove-Item "git-installer.exe"
+}
+
 # Display versions just to confirm
 python --version
 pip --version
 pipenv --version
+git --version
