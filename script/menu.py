@@ -1,7 +1,7 @@
 from colorama import Fore, Style
 import os
 from datetime import datetime
-from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard, get_github_username, getUserLocks
+from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard, get_github_username, getUserLocks, get_memory_card_full_path
 
 def displayMemoryCardReport(lineNumbers = False) -> list:
     'displays a report of the memory cards. can optionally add line numbers.'
@@ -109,6 +109,61 @@ def viewMemoryCards():
 
     pressAnyKey()
 
+def createMemoryCard():
+    'walks user through new memory card creation'
+    clearScreen()
+    printc("Loading data from github...")
+    loadMemoryCardData()
+
+    clearScreen()
+    displayTitle("Create New Memory Card")
+    printc("This utility helps you create a new memory card.")
+    printc("It creates the necessary folders, and you handle linking to it in Dolphin.")
+    printc("Below are the existing memory cards.")
+
+    memoryCardInfo = displayMemoryCardReport()
+    cardNames = set()
+    for (name, _) in memoryCardInfo:
+        cardNames.add(name)
+
+    print("Would you like to create a new memory card?")
+    ans = input("[Y or N]: ")
+    if isYes(ans):
+        printc("Memory card creation dialog - Enter \"Q\" to quit at any time\n")
+        
+        # name of memory card
+        print("Enter a name for the new memory card. Don't include any special characters - letters and numbers only please!")
+        valid = False
+        while not valid:
+            name = input("Name: ")
+            if name == "":
+                # quit if they enter nothing, in case they don't know how to leave
+                return
+            if len(name) > 15:
+                printc(f"Name is too long ({len(name)} chars). Name should be 15 chars or less.", Fore.YELLOW)
+                continue
+            if name in cardNames:
+                printc(f"Name \"{name}\" is already taken.", Fore.YELLOW)
+            # todo - validate name so no special characters are included
+            valid = True
+        
+        clearScreen()
+        print("Chosen name for memory card: " + colorStr(name, Fore.GREEN))
+        ans = input("Confirm creation? [Y or N]: ")
+        if isYes(ans):
+            # todo: create new memory card
+            printc(f"\nMemory card {name} created!", Fore.GREEN)
+            printc("Make sure to configure Dolphin to use the created folder now:")
+            print(get_memory_card_full_path(name))
+            print("(Note: you will probably need to point to the JPN/region's subfolder)")
+            pressAnyKey()
+            return
+        printc("Memory card creation cancelled.")
+        pressAnyKey()
+        return
+    printc("Memory card creation cancelled.")
+    pressAnyKey()
+
 def displayChangesReport(lineNumbers = False) -> int:
     'shows a report of the files that have changed. can optionally add line numbering.'
     unsavedChanges = getModifiedMemoryCards()
@@ -127,6 +182,7 @@ def displayChangesReport(lineNumbers = False) -> int:
 
 
 def reviewChanges():
+    'shows the unsaved changes and lets user choose to save them to github'
     clearScreen()
     displayTitle("Unsaved Changes")
     printc("Below are changes you've made to memory cards that haven't been saved to Github yet.")
@@ -149,6 +205,7 @@ def reviewChanges():
     pressAnyKey()
 
 def discardChanges():
+    'shows unsaved changes and lets user choose to discard them'
     clearScreen()
     displayTitle("Discard Changes")
     printc("Below are changes you've made to memory cards that haven't been saved to Github yet.")
@@ -177,7 +234,7 @@ def discardChanges():
 def displayTitle(subtitle: str = ""):
     mainTitle = "YKK INDUSTRIES - ZA GAMECUBE MANAGER"
     underline = "=" * len(mainTitle)
-    printc(mainTitle, Fore.LIGHTBLUE_EX)
+    printc(mainTitle, Fore.BLUE)
     if subtitle != "":
         # center the subtitle, if possible
         padding = ""
@@ -247,7 +304,7 @@ def menu():
             optionTitle = menu_opt[0]
             # a third value represents a group header
             if len(menu_opt) == 3:
-                printc(" *  " + menu_opt[2])
+                printc(" *  " + menu_opt[2], Fore.LIGHTBLUE_EX)
             optNumber += 1
             print(f"[{optNumber}] {optionTitle}")
         print("[Q] Quit")

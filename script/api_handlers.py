@@ -161,6 +161,11 @@ def push_to_github(commitMessage: str):
 def get_project_root():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
+def get_memory_card_full_path(cardName: str) -> str:
+    rootPath = get_project_root()
+    return os.path.join(rootPath, 'memory-cards', cardName)
+
+
 def get_github_username() -> str:
     'gets the github username of the user associated with the git configuration'
     repo = getRepo()
