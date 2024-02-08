@@ -194,7 +194,7 @@ def reviewChanges():
         return
     
     printc("\nWould you like to save these changes?")
-    ans = input(f"[{colorStr("Y", Fore.GREEN)} or {colorStr("N", Fore.RED)}]: ")
+    ans = input(f"[{colorStr('Y', Fore.GREEN)} or {colorStr('N', Fore.RED)}]: ")
     if not isYes(ans):
         printc("Changes left unsaved.", Fore.LIGHTYELLOW_EX)
         pressAnyKey()
@@ -218,9 +218,9 @@ def discardChanges():
         return
 
     printc("\nWould you like to discard these changes?")
-    ans = input(f"[{colorStr("Y", Fore.RED)} or {colorStr("N", Fore.GREEN)}]: ")
+    ans = input(f"[{colorStr('Y', Fore.RED)} or {colorStr('N', Fore.GREEN)}]: ")
     if isYes(ans):
-        print(f"Confirm that you want to {colorStr("delete", Fore.RED)} these changes (Yes = delete)")
+        print(f"Confirm that you want to {colorStr('delete', Fore.RED)} these changes (Yes = delete)")
         ans = input("[Y or N]: ")
         if isYes(ans):
             # todo - delete the unsaved data
