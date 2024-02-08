@@ -160,7 +160,28 @@ git clone https://github.com/webbben/memory-card-share.git
 Now you should see the folder for this repository, and inside there should be folders for `/memory-cards`, `/scripts`, and `/install`.
 You're ready now!  You can either open the folder in a regular file explorer, or keep using the command line.
 
-From here, you can run the program by running `main.py` inside the `/scripts` folder.
+From here, you can run the program by running the run-<os> file corresponding to your operating system:
+
+Windows: `run-windows.bat`
+
+Unix-like OS: `run-unix.sh`
 
 # User Guide
-this section will detail how to use this program.
+At this point, it's assumed you've completed the installation and setup completely. The rest of this file will provide guidelines for how this program is intended to be used.
+
+## Running this program!
+To start this program, run the "run" file for your OS. This will be `run-windows.bat` or `run-unix.sh`.
+
+This starts up the menu so you can get started!
+
+![image](https://github.com/webbben/memory-card-share/assets/38891424/853eb916-6a70-46b8-90e6-e834db2b3cdc)
+
+Here's a brief description of each menu:
+* View all memory cards - shows you the existing memory cards to choose from
+* Checkout a memory card - lets you reserve a memory card so you can start playing with it
+* Create a new memory card - dialog to walk through creating a new memory card
+* Save your changes - run this to save your memory card changes!
+* Discard changes - run this to revert your (unsaved) changes back to the version on github
+* Quit - quit
+
+TODO - add more details for each option
