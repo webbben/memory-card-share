@@ -119,17 +119,17 @@ def createMemoryCard():
     displayTitle("Create New Memory Card")
     printc("This utility helps you create a new memory card.")
     printc("It creates the necessary folders, and you handle linking to it in Dolphin.")
-    printc("Below are the existing memory cards.")
+    printc("Below are the existing memory cards.\n")
 
     memoryCardInfo = displayMemoryCardReport()
     cardNames = set()
     for (name, _) in memoryCardInfo:
         cardNames.add(name)
 
-    print("Would you like to create a new memory card?")
+    print("\nWould you like to create a new memory card?")
     ans = input("[Y or N]: ")
     if isYes(ans):
-        printc("Memory card creation dialog - Enter \"Q\" to quit at any time\n")
+        printc("\nMemory card creation dialog - Enter \"Q\" to quit at any time\n")
         
         # name of memory card
         print("Enter a name for the new memory card. Don't include any special characters - letters and numbers only please!")
@@ -144,6 +144,7 @@ def createMemoryCard():
                 continue
             if name in cardNames:
                 printc(f"Name \"{name}\" is already taken.", Fore.YELLOW)
+                continue
             # todo - validate name so no special characters are included
             valid = True
         
