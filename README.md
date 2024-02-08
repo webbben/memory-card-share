@@ -11,10 +11,12 @@ These instructions assume that you've never used Python, git, github etc before.
 I'll split this into the following sections:
 * [How to install this program's dependencies](#installing-the-dependencies)
   * things like the programming language runtime, for example
+  * Try using the installation script first, before resorting to the manual instructions
 * [How to set up git and your github account](#setting-up-git-and-your-github-account)
   * so you have the ability to interact with this repository
 * [How to download and run this program](#downloading-this-program)
   * so you can get playing!
+  * Windows users can just run the default setup script
 
 ## Installing the Dependencies
 First, let's go over some basic dependencies - we'll walk through setting each of these up, but if you already have Python then some of this may be taken care of already.
@@ -114,13 +116,18 @@ This website has good instructions:  https://docs.github.com/en/authentication/k
 But below I'll try to outline the steps:
 1) Generate a personal access token
 - https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
-- For scopes, make sure to include "repos" (repositories)
+- For scopes, make sure to include the "repo" section and all its sub-options
+- For expiration, set it to "No Expiration". This way you don't lose the ability to save and load memory card data from Github in the future.
 2) Use your personal token on the command line
 - https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#using-a-personal-access-token-on-the-command-line
+- For this, it will ask you to use `git clone` to attempt to clone a repository. It can be any repository - the point is it will prompt you for credentials, and you can enter the personal access token.
+- Once you do this, it's stored in memory for the current terminal session. Without closing the terminal, proceed to the next step
 3) Use Git Credential Manager to store the access token
 - https://docs.github.com/en/get-started/getting-started-with-git/caching-your-github-credentials-in-git#git-credential-manager
+- After entering the command below in the terminal, the personal access token should now be cached for future use. You should no longer be prompted for a password when cloning or pushing to repos.
+- To test this, close your terminal and re-open a new terminal session.  Try cloning the same repo you did before, and confirm that it doesn't make you enter a password.
 
-If you're on windows, you can enter this in the Git Bash terminal. Unix-based systems can use the regular command line.
+(for git credential manager)
 ```shell
 git config --global credential.helper manager
 ```
@@ -140,7 +147,12 @@ git config user.name
 ```
 
 ## Downloading this program
-This is the moment we've all been waiting for.  Sorry if the setup has been massive, I kind of forgot how many little things go into using Python, git, github etc.
+This is the moment we've all been waiting for.  Hopefully it hasn't been too much trouble getting the aforementioned set up - I kind of forgot how many little things go into using Python, git, github etc.
+
+${{\color{Goldenrod}\Huge{\textsf{  Windows\ default\ installation\ script!\ \}}}}\$
+
+If you're using Windows, try using the `setup-windows-default.bat` script found in the [/install folder!](https://github.com/webbben/memory-card-share/tree/master/install) It should handle cloning the repository to a folder on your desktop for easy access, and handle the pipenv setup too.
+If everything works, you can then go straight to the folder on your desktop and start it up.
 
 ### Cloning this repository
 First, decide on a place in your computer you want to store this program. You'll be going to this location either in a terminal or in your folder browser every time you want to start playing, so choosing your desktop might be a solid choice.
