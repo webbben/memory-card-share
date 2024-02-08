@@ -9,7 +9,7 @@ You can download an individual script by clicking on it to go to its page, and t
 ### Windows
 Most of you use Windows, so more effort has gone into streamlining this process :)
 
-1) run the powershell script `install-python-windows.ps1`
+1) run the powershell script `install-python-windows.bat`
     * this installs the dependencies we need for this program to work
 3) run the batch script `setup-windows-default.bat`
     * this puts the cloned repo folder on your desktop and sets it up for use
