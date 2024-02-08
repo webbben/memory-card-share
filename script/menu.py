@@ -1,12 +1,12 @@
 from colorama import Fore, Style
 import os
 from datetime import datetime
-from api_handlers import getMemoryCardInfo, getModifiedMemoryCards, saveMemoryCardChanges, loadMemoryCardData, checkForRemoteChanges, lockMemoryCard, get_github_username, getUserLocks, get_memory_card_full_path, releaseAllUserLocks
+import api_handlers as api
 
 def displayMemoryCardReport(lineNumbers = False) -> list:
     'displays a report of the memory cards. can optionally add line numbers.'
-    memoryCardInfo = getMemoryCardInfo()
-    username = get_github_username()
+    memoryCardInfo = api.getMemoryCardInfo()
+    username = api.get_github_username()
     if len(memoryCardInfo) == 0:
         print("No memory cards found.")
         print("Either this is a bug, or all the memory cards somehow got deleted.")
@@ -55,7 +55,7 @@ def checkoutMemoryCard():
     clearScreen()
     # get up to date locks from github
     printc("Loading data from Github...")
-    loadMemoryCardData()
+    api.refreshMemoryCardData()
 
     done = False
     warning = ""
@@ -80,7 +80,7 @@ def checkoutMemoryCard():
         if line > 0 and line <= len(memoryCardInfo):
             # attempt to check out this memory card
             cardName = memoryCardInfo[line - 1][0]
-            if lockMemoryCard(cardName):
+            if api.lockMemoryCard(cardName):
                 printc(f"\nSuccessfully locked {cardName}!", Fore.GREEN)
                 print("You're free to play with this memory card in Dolphin now.")
                 print("(Don't forget to save to Github and unlock when you're done)")
@@ -97,7 +97,7 @@ def viewMemoryCards():
     'displays a simple report of all the memory cards.'
     clearScreen()
     printc("Loading data from github...")
-    loadMemoryCardData()
+    api.refreshMemoryCardData()
 
     clearScreen()
     displayTitle("Memory Cards")
@@ -113,7 +113,7 @@ def createMemoryCard():
     'walks user through new memory card creation'
     clearScreen()
     printc("Loading data from github...")
-    loadMemoryCardData()
+    api.refreshMemoryCardData()
 
     clearScreen()
     displayTitle("Create New Memory Card")
@@ -155,7 +155,7 @@ def createMemoryCard():
             # todo: create new memory card
             printc(f"\nMemory card {name} created!", Fore.GREEN)
             printc("\nMake sure to configure Dolphin to use the created folder now:")
-            print(get_memory_card_full_path(name))
+            print(api.get_memory_card_full_path(name))
             printc("\n(Note: you will probably need to point to the JPN/region's subfolder)")
             pressAnyKey()
             return
@@ -167,7 +167,7 @@ def createMemoryCard():
 
 def displayChangesReport(lineNumbers = False) -> int:
     'shows a report of the files that have changed. can optionally add line numbering.'
-    unsavedChanges = getModifiedMemoryCards()
+    unsavedChanges = api.getModifiedMemoryCards()
     if len(unsavedChanges) == 0:
         print("No local unsaved changes.\n")
         pressAnyKey()
@@ -201,7 +201,7 @@ def reviewChanges():
         return
     
     # attempt to save
-    saveMemoryCardChanges()
+    api.saveMemoryCardChanges()
     printc("Save successful!", Fore.GREEN)
     pressAnyKey()
 
@@ -248,7 +248,7 @@ def handleQuit():
     'handles quitting and leaving the menu'
     # returns True if quitting, False if not
     # make sure there are no unsaved changes
-    unsaved_changes = getModifiedMemoryCards()
+    unsaved_changes = api.getModifiedMemoryCards()
     if len(unsaved_changes) > 0:
         clearScreen()
         printc("Warning! There are unsaved changes on a memory card.", Fore.LIGHTRED_EX)
@@ -265,7 +265,7 @@ def handleQuit():
         return False
     
     # release any held locks - we can do this safely since there are no unsaved changes
-    success = releaseAllUserLocks()
+    success = api.releaseAllUserLocks()
     if not success:
         clearScreen()
         printc("Warning: a memory card failed to unlock for an unknown reason.", Fore.YELLOW)
@@ -277,10 +277,10 @@ def bannerLogic():
     # check if the user has memory cards checked out
     # todo
     # check if there are changes in the remote repo
-    remote_changes_count = len(checkForRemoteChanges())
+    remote_changes_count = len(api.checkForRemoteChanges())
     if remote_changes_count > 0:
         return (f"There are remote changes ({remote_changes_count}). You should pull these to stay up to date.", Fore.YELLOW)
-    username = get_github_username()
+    username = api.get_github_username()
     # warn user if they don't have a username yet
     if username == "Player":
         return ("it seems you haven't setup your git name info properly - ask Ben if you need help :)", Fore.YELLOW)
@@ -302,7 +302,7 @@ def menu():
 
     while not done:
         clearScreen()
-        lockedCards = getUserLocks()
+        lockedCards = api.getUserLocks()
         displayTitle()
         # display info banners, as needed
         if banner:

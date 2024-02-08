@@ -11,6 +11,21 @@ def getRepo() -> git.Repo:
     repo = git.Repo(repo_path)
     return repo
 
+def refreshMemoryCardData():
+    'reloads memory card data from github. Note: only does this if there are no unsaved local changes.'
+    # we don't want to automatically save unsaved memory card changes here, so give up on refreshing
+    if len(getModifiedMemoryCards()) > 0:
+        return
+    loadMemoryCardData()
+
+def createNewMemoryCard(cardName: str) -> bool:
+    # make the new card's folder
+    newCardPath = get_memory_card_full_path(cardName)
+    os.mkdir(newCardPath)
+    # make JPN and ENG
+    os.mkdir(os.path.join(newCardPath, "JPN"))
+    os.mkdir(os.path.join(newCardPath, "USA"))
+
 def checkForRemoteChanges():
     '''returns list of memory cards/files that have changed in the remote, and have yet to be pulled to local'''
     repo = getRepo()
