@@ -9,15 +9,18 @@ You can download an individual script by clicking on it to go to its page, and t
 ### Windows
 Most of you use Windows, so more effort has gone into streamlining this process :)
 
-1) run the powershell script `install-python-windows.ps1`
-    * this installs the dependencies we need for this program to work
+1) run the batch script `install-python-windows.bat` to install the dependencies
+2) Return to the main instructions and do the [git and github setup](https://github.com/webbben/memory-card-share?tab=readme-ov-file#setting-up-git-and-your-github-account) steps
+    * once you have the personal access token setup, git will handle authenticating with your github account whenever our program executes git commands
 3) run the batch script `setup-windows-default.bat`
     * this puts the cloned repo folder on your desktop and sets it up for use
 
 ### Mac
 
-run the bash script `install-python-mac.sh`
+1) run the bash script `install-python-mac.sh` to install the dependencies
+2) Return to the main instructions and finish the rest of the setup (starting from the [git and github setup](https://github.com/webbben/memory-card-share?tab=readme-ov-file#setting-up-git-and-your-github-account) steps)
 
 ### Debian/Ubuntu
 
-run the bash script `install-python-debian.sh`
+1) run the bash script `install-python-debian.sh` to install the dependencies
+2) Return to the main instructions and finish the rest of the setup (starting from the [git and github setup](https://github.com/webbben/memory-card-share?tab=readme-ov-file#setting-up-git-and-your-github-account) steps)

@@ -105,39 +105,20 @@ sudo apt-get install git
 First, create a **github account** at github.com if you don't have one already.
 This account is required for you to be able to make edits to this repository (i.e. uploading your memory card data).
 
-Once that's taken care of, let Ben know and send him your user information.  He will add you to the list of contributors.
+Once that's taken care of, let Ben know and send him your user information.  He needs to add you to the list of contributors for this repo before we can move forward.
 
-### Personal Access Token
+### Git config
+We need to set the following config settings for your git installation on your computer now:
+* user.name - your display name
+* user.email - the email you used to make your github account
+* credential.helper - I'll explain this in more detail
 
-Next you need to get a personal access token and set it up on your local git installation. This will let git push to this repository, which is required for this program to work.
+Github will require these things so they know who is trying to use this repo.
 
-This website has good instructions:  https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
-
-But below I'll try to outline the steps:
-1) Generate a personal access token
-- https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
-- For scopes, make sure to include the "repo" section and all its sub-options
-- For expiration, set it to "No Expiration". This way you don't lose the ability to save and load memory card data from Github in the future.
-2) Use your personal token on the command line
-- https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#using-a-personal-access-token-on-the-command-line
-- For this, it will ask you to use `git clone` to attempt to clone a repository. It can be any repository - the point is it will prompt you for credentials, and you can enter the personal access token.
-- Once you do this, it's stored in memory for the current terminal session. Without closing the terminal, proceed to the next step
-3) Use Git Credential Manager to store the access token
-- https://docs.github.com/en/get-started/getting-started-with-git/caching-your-github-credentials-in-git#git-credential-manager
-- After entering the command below in the terminal, the personal access token should now be cached for future use. You should no longer be prompted for a password when cloning or pushing to repos.
-- To test this, close your terminal and re-open a new terminal session.  Try cloning the same repo you did before, and confirm that it doesn't make you enter a password.
-
-(for git credential manager)
-```shell
-git config --global credential.helper manager
-```
-
-### Display Name
+#### user.name
 Let's set up your display name in git.  This will be what other users see you as in our little program.
 
 Enter this command, replacing `"Your Name"` with your name (don't forget the quotes):
-
-(Windows users can once again use the **Git Bash** terminal for these git related commands)
 ```shell
 git config --global user.name "Your Name"
 ```
@@ -145,6 +126,54 @@ to confirm it worked, you can enter:
 ```shell
 git config user.name
 ```
+
+#### user.email
+Next, enter your email the same way you did for your name:
+```shell
+git config --global user.email "your-email@domain.com"
+```
+This needs to be the same email as what you used to make your github account! (I think)
+
+#### credential.helper
+This last config setting tells git what to do with your credentials. It basically will tell it to keep your personal access token (next step) saved so you dont need to keep entering it.
+```shell
+git config --global credential.helper store
+```
+
+#### confirm your config
+To see all your git config settings, enter:
+```shell
+git config --list
+```
+You should see the values you set listed here.
+
+### Personal Access Token
+Once you've gotten your user info config for git set, we now need the final piece of identification/authorization for git to work with github: a "personal access token".
+This will let git push to this repository, which is required for this program to work.
+
+I've outlined the steps you need to follow below, but this site is what I consulted:
+
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+
+
+But anyway, follow these steps below:
+1) [Generate a personal access token (classic)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic)
+- For scopes, make sure to include the "repo" section and all its sub-options
+- For expiration, set it to "No Expiration". This way you don't lose the ability to save and load memory card data from Github in the future.
+2) [Use your personal token on the command line](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#using-a-personal-access-token-on-the-command-line)
+- We need to do a test edit so we will be prompted for our credentials. Let's use this repo. The purpose of this step is to enter your personal access token and have it stored by git.
+- Copy the HTTP address for this repo (see image below) and enter `git clone http-address-you-copied`.
+
+![image](https://github.com/webbben/memory-card-share/assets/38891424/c62a1744-82b4-4ad6-ae0d-ba441ab62ff2)
+
+- in your terminal, navigate to the cloned repo's folder. Once you're in there, enter `git push`. This should prompt you for your credentials.
+- Enter your username, and for the password, paste your **personal access token**. Hit enter, and it should accept the credentials. It'll probably tell you there's nothing to push though, since you've made no edits to any files.
+
+3) *(Optional)* - test that you are truly allowed to edit this repo
+- If the previous steps succeeded, then you should now be allowed to edit this repo.
+- To test this, you can make a dummy edit to this repo.  Please don't edit any important files - you can edit README.md though (or just create a random .txt file)
+- once you've made a change, enter `git add *`, `git commit`, and `git push` to push your change to the repo. You shouldn't be prompted for your username or password this time if everything worked from before.
+- You can also consider undoing your change and pushing that back to the repo, just to keep things clean.
 
 ## Downloading this program
 This is the moment we've all been waiting for.  Hopefully it hasn't been too much trouble getting the aforementioned set up - I kind of forgot how many little things go into using Python, git, github etc.
@@ -197,3 +226,4 @@ Here's a brief description of each menu:
 * Quit - quit
 
 TODO - add more details for each option
+
