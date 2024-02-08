@@ -210,7 +210,11 @@ def get_memory_card_full_path(cardName: str) -> str:
 def get_github_username() -> str:
     'gets the github username of the user associated with the git configuration'
     repo = getRepo()
-    username = repo.config_reader().get_value("user", "name")
+    # prevent crash if user.name is unset
+    try:
+        username = repo.config_reader().get_value("user", "name")
+    except:
+        username = None
     if username == "" or username == None:
         return "Player"
     return username
