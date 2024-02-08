@@ -154,9 +154,9 @@ def createMemoryCard():
         if isYes(ans):
             # todo: create new memory card
             printc(f"\nMemory card {name} created!", Fore.GREEN)
-            printc("Make sure to configure Dolphin to use the created folder now:")
+            printc("\nMake sure to configure Dolphin to use the created folder now:")
             print(get_memory_card_full_path(name))
-            print("(Note: you will probably need to point to the JPN/region's subfolder)")
+            printc("\n(Note: you will probably need to point to the JPN/region's subfolder)")
             pressAnyKey()
             return
         printc("Memory card creation cancelled.")
