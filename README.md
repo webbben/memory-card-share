@@ -1,11 +1,18 @@
 # Memory card share
 This repo was made to facilitate sharing virtual gamecube memory cards between friends. It's assumed you're using this with Dolphin emulator on gamecube games.
 
+Below you'll find these main sections:
+* [Setup instructions](#setup-instructions) - everything you need to download and configure
+* [User Guide](#user-guide) - guide for the basic features and how they are meant to be used
+
 # Setup Instructions
-I'll split this into two sections:
-* How to install this program's dependencies
-* How to set up git, github, and use this program
-* How to set up Dolphin emulator on your computer
+I'll split this into the following sections:
+* [How to install this program's dependencies](#installing-the-dependencies)
+  * things like the programming language runtime, for example
+* [How to set up git and your github account](#setting-up-git-and-your-github-account)
+  * so you have the ability to interact with this repository
+* [How to download and run this program](#downloading-this-program)
+  * so you can get playing!
 
 ## Installing the Dependencies
 First, let's go over some basic dependencies - we'll walk through setting each of these up, but if you already have Python then some of this may be taken care of already.
@@ -16,10 +23,11 @@ These are the dependencies:
 * pipenv - a python package that handles making virtual environments for code dependencies. Easy to install using pip.
 * git - version control software that effectively powers this memory card sharing system.
 
-```diff
-@@ I made some shell scripts to automate installation of all these dependencies! Go to the /install folder @@
-@@ if you'd like to use those. If you have trouble with them, you can also use the manual instructions provided below. @@
-```
+${{\color{Goldenrod}\Huge{\textsf{  Installation\ Scripts\ \}}}}\$
+
+I made some scripts that should be able to handle installing these dependencies! Go to the [/install](https://github.com/webbben/memory-card-share/tree/master/install) folder to find out which script you should run.
+If you run into problems, you can try the instructions I've outlined below too.
+
 
 ### Installing Python
 If you're not sure whether or not you have python installed already, try one of these commands in your terminal:
@@ -88,7 +96,7 @@ sudo apt-get update
 sudo apt-get install git
 ```
 
-## Setting up your Github account and using this program!
+## Setting up git and your Github account
 
 First, create a **github account** at github.com if you don't have one already.
 This account is required for you to be able to make edits to this repository (i.e. uploading your memory card data).
@@ -115,7 +123,7 @@ If you're on windows, you can enter this in the Git Bash terminal. Unix-based sy
 git config --global credential.helper manager
 ```
 
-### Using this program!
+## Downloading this program
 This is the moment we've all been waiting for.  Sorry if the setup has been massive, I kind of forgot how many little things go into using Python, git, github etc.
 
 #### Display Name
@@ -144,3 +152,6 @@ now, you should see a folder named after this repository, and inside there shoul
 You're ready now!  You can either open the folder in a regular file explorer, or keep using the command line.  
 
 From here, you can run the program by running `main.py` inside the `/scripts` folder.
+
+# User Guide
+this section will detail how to use this program.
