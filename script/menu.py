@@ -290,7 +290,7 @@ def menu():
     menu_options = [
         ("View all memory cards", viewMemoryCards, "Memory Card Management"),
         ("Checkout a memory card", checkoutMemoryCard),
-        ("Create a new memory card", viewMemoryCards), #todo
+        ("Create a new memory card", createMemoryCard), #todo
         ("Save your changes", reviewChanges, "Done Playing?"),
         ("Discard changes", reviewChanges), #todo
     ]
