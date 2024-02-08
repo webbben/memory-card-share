@@ -26,7 +26,7 @@ def checkForRemoteChanges():
 def lockMemoryCard(cardName: str) -> bool:
     'puts a lock on a memory card on github. returns true if successful, or false if the card is already locked.'
     # first, confirm that there is no lock on the card (check github)
-    path = os.path.join('memory-cards', cardName, 'lock.json')
+    path = os.path.join(get_memory_card_full_path(cardName), 'lock.json')
     already_locked = does_file_exist_remote(path)
     if already_locked:
         return False
@@ -78,7 +78,7 @@ def releaseAllUserLocks() -> bool:
 
 def unlockMemoryCard(cardName: str) -> bool:
     '''unlocks a memory card. only fails if the card wasn't locked to begin with'''
-    path = os.path.join('memory-cards', cardName, 'lock.json')
+    path = os.path.join(get_memory_card_full_path(cardName), 'lock.json')
 
     try:
         # Attempt to remove the lock.json file
@@ -114,7 +114,7 @@ def loadMemoryCardData():
 
 def getMemoryCardInfo():
     'Gets all the memory cards currently accessible on the machine'
-    dir = "memory-cards"
+    dir = get_memory_cards_dir()
     output = []
 
     for cardDir in os.listdir(dir):
@@ -179,12 +179,18 @@ def push_to_github(commitMessage: str):
     repo.git.push()
 
 def get_project_root():
+    'gets the absolute path for our project root directory'
     return os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
+def get_memory_cards_dir() -> str:
+    'gets the absolute path for the memory-cards main storage directory (/memory-cards)'
+    rootPath = get_project_root()
+    return os.path.join(rootPath, 'memory-cards')
+
 def get_memory_card_full_path(cardName: str) -> str:
+    'gets the absolute path for a specific memory card folder (/memory-cards/cardName)'
     rootPath = get_project_root()
     return os.path.join(rootPath, 'memory-cards', cardName)
-
 
 def get_github_username() -> str:
     'gets the github username of the user associated with the git configuration'
