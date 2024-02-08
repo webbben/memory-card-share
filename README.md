@@ -198,5 +198,3 @@ Here's a brief description of each menu:
 
 TODO - add more details for each option
 
-Kazumi test edit
-another test edit
