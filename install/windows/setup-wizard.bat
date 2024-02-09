@@ -6,7 +6,7 @@ echo.
 echo This script will attempt to run other scripts that:
 echo 1) install all software dependencies (Python, git, etc)
 echo 2) download the github repo to a folder on your Desktop
-echo 3) help you set up the required git configuration to authenticate with github
+echo 3) help you setup the required git configuration to authenticate with github
 echo.
 echo NOTE: if you run this, then you hopefully shouldn't need to run any other installation scripts on your own.
 echo.
