@@ -8,6 +8,10 @@ Below you'll find these main sections:
 # Setup Instructions
 These instructions assume that you've never used Python, git, github etc before. If you have, then some (or all) of this may already be taken care of.
 
+${{\color{Goldenrod}\Huge{\textsf{  Windows\ Setup\ Wizard!\ \}}}}\$
+
+If you use windows, then you should be able to run a setup wizard to handle all this stuff! Go to the [/install](https://github.com/webbben/memory-card-share/tree/master/install) folder and follow the instructions there.
+
 I'll split this into the following sections:
 * [How to install this program's dependencies](#installing-the-dependencies)
   * things like the programming language runtime, for example
