@@ -229,4 +229,4 @@ Here's a brief description of each menu:
 * Discard changes - run this to revert your (unsaved) changes back to the version on github
 * Quit - quit
 
-TODO - add more details for each option
+TODO - add more details for each option and stuff
