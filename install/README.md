@@ -10,8 +10,9 @@ You can download an individual script by clicking on it to go to its page, and t
 Most of you use Windows, so more effort has gone into streamlining this process :)
 
 1. download the windows/ folder and all its contents. open the folder up in your file explorer.
-2. run the batch script `setup-wizard.bat` by right clicking and choosing **run as administrator**. This runs through the entire setup process! (you don't need to run the other batch scripts - this one runs them all)
-3. Midway through this script, you'll need to get your github personal access token. Follow the instructions for [generating a personal access token](https://github.com/webbben/memory-card-share?tab=readme-ov-file#personal-access-token) and return to the script. You can ignore the other steps in the README after generating the token, since this script will do it for you.
+    - apparently there's no option for downloading an entire folder in github, so you'll need to manually download each file and place them together in the same folder on your computer.
+3. run the batch script `setup-wizard.bat` by right clicking and choosing **run as administrator**. This runs through the entire setup process! (you don't need to run the other batch scripts - this one runs them all)
+4. Midway through this script, you'll need to get your github personal access token. Follow the instructions for [generating a personal access token](https://github.com/webbben/memory-card-share?tab=readme-ov-file#personal-access-token) and return to the script. You can ignore the other steps in the README after generating the token, since this script will do it for you.
     - once you have the personal access token setup, git will handle authenticating with your github account whenever our program executes git commands
 
 ### Mac
