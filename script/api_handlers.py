@@ -165,6 +165,19 @@ def getLocalUnexpectedChanges():
     changed_files = find_local_unexpected_changes()
     return changed_files
 
+def verifyGitConfig():
+    'confirm that git config is set as we expect'
+    name = get_github_config_value("user", "name")
+    if name == None:
+        return (False, "user.name")
+    email = get_github_config_value("user", "email")
+    if email == None:
+        return (False, "user.email")
+    credhelper = get_github_config_value("credential", "helper")
+    if credhelper == None:
+        return (False, "credential.helper")
+    return (True, "")
+
 # =========================================================
 #
 # General Utils
@@ -242,15 +255,20 @@ def get_memory_card_full_path(cardName: str) -> str:
     rootPath = get_project_root()
     return os.path.join(rootPath, 'memory-cards', cardName)
 
+def get_github_config_value(section: str, option: str):
+    'attempts to retrieve a value at the given config setting'
+    repo = getRepo()
+    # prevent crash if value is unset
+    try:
+        value = repo.config_reader().get_value(section, option)
+    except:
+        value = None
+    return value
+
 def get_github_username() -> str:
     'gets the github username of the user associated with the git configuration'
-    repo = getRepo()
-    # prevent crash if user.name is unset
-    try:
-        username = repo.config_reader().get_value("user", "name")
-    except:
-        username = None
-    if username == "" or username == None:
+    username = get_github_config_value("user", "name")
+    if username == None:
         return "Player"
     return username
 

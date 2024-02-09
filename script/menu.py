@@ -315,10 +315,10 @@ def bannerLogic():
     changed_files = api.getLocalUnexpectedChanges()
     if len(changed_files) > 0:
         return ("There are unexpected changes in your local files. If you didn't make purposeful changes, consider hard resetting.")
+    git_config_status = api.verifyGitConfig()
+    if git_config_status[0] == False:
+        return (f"Your git config appears to be missing a value for {git_config_status[1]}. Refer to the git setup instructions to correct this.")
     username = api.get_github_username()
-    # warn user if they don't have a username yet
-    if username == "Player":
-        return ("it seems you haven't setup your git name info properly - ask Ben if you need help :)", Fore.YELLOW)
     return (f"Welcome, {username}", Fore.MAGENTA)
 
 def menu():
