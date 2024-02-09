@@ -173,9 +173,6 @@ def verifyGitConfig():
     email = get_github_config_value("user", "email")
     if email == None:
         return (False, "user.email")
-    credhelper = get_github_config_value("credential", "helper")
-    if credhelper == None:
-        return (False, "credential.helper")
     return (True, "")
 
 # =========================================================

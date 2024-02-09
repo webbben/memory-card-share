@@ -306,18 +306,16 @@ def handleQuit():
     return True
 
 def bannerLogic():
-    # check if the user has memory cards checked out
-    # todo
     # check if there are corrupted/unexpectedly changed files
     changed_files = api.getLocalScriptChanges()
     if len(changed_files) > 0:
-        return ("Files in your scripts directory seem to have changed. If you aren't coding new features, it's strongly advised you hard reset.", Fore.YELLOW)
+       return ("Files in your scripts directory seem to have changed. If you aren't coding new features, it's strongly advised you hard reset.", Fore.YELLOW)
     changed_files = api.getLocalUnexpectedChanges()
     if len(changed_files) > 0:
         return ("There are unexpected changes in your local files. If you didn't make purposeful changes, consider hard resetting.")
     git_config_status = api.verifyGitConfig()
     if git_config_status[0] == False:
-        return (f"Your git config appears to be missing a value for {git_config_status[1]}. Refer to the git setup instructions to correct this.")
+        return (f"Your git config appears to be missing a value for {git_config_status[1]}. Refer to the git setup instructions to correct this.", Fore.YELLOW)
     username = api.get_github_username()
     return (f"Welcome, {username}", Fore.MAGENTA)
 
