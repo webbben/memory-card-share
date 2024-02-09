@@ -237,12 +237,12 @@ def resetToRemote():
     clearScreen()
     displayTitle("Hard Reset (!)")
     printc("This option is for hard reseting your local repository.", Fore.LIGHTRED_EX)
-    printc(f"In other words, all local files will be {colorStr('wiped out and replaced', Fore.RED)} by whatever is in github right now.")
+    print(f"In other words, all local files will be {colorStr('wiped out and replaced', Fore.LIGHTRED_EX)} by whatever is in github right now.\n")
     printc("Valid reasons you might do this:")
     printc("1) You think you've messed up some local files and want to cleanly reset to what's on github.")
     printc("2) You want to undo some unsaved changes to a memory card.")
     printc("3) There's an update to this program's source code, and you'd like to install it.\n")
-    printc("WARNING: any unsaved game data that hasn't been uploaded to github will be deleted!\n", Fore.RED)
+    printc("WARNING: any unsaved game data that hasn't been uploaded to github will be deleted!\n", Fore.LIGHTRED_EX)
 
     print("Do you want to hard reset?")
     ans = input("[Y or N]: ")
@@ -351,7 +351,7 @@ def menu():
                 printc(" *  " + menu_opt[2], Fore.LIGHTBLUE_EX)
             optNumber += 1
             print(f"[{optNumber}] {optionTitle}")
-        printc("[Q] Quit", Fore.CYAN)
+        printc("\n[Q] Quit", Fore.CYAN)
         printc(warning, Fore.LIGHTYELLOW_EX)
 
         # handle user input
