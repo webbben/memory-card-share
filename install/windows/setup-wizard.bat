@@ -16,12 +16,14 @@ echo Alright, let's get started then.
 pause
 
 REM call the dependency installer
-call install-python-windows.bat
+call .\install-python-windows.bat
 
 echo.
 echo Okay! dependencies should be installed now, assuming everything went smoothly. If the window just opened and then immediately shut, that's a bad sign though lol.
 echo Next we are launching the default setup installer. This will handle the last 2 steps. Be prepared to consult the "Git and Github setup" instructions I provided, since you'll be asked for your personal access token.
 pause
+
+call .\setup-windows-default.bat
 
 echo.
 echo Alright, at this point everything should be setup correctly.  Try running the run-windows.bat file in the folder that was created on your desktop.
