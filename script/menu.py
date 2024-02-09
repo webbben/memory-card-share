@@ -232,6 +232,36 @@ def discardChanges():
     printc("Nothing changed.")
     pressAnyKey()
 
+def resetToRemote():
+    'menu option for doing hard reset to origin'
+    clearScreen()
+    displayTitle("Hard Reset (!)")
+    printc("This option is for hard reseting your local repository.", Fore.LIGHTRED_EX)
+    printc(f"In other words, all local files will be {colorStr('wiped out and replaced', Fore.RED)} by whatever is in github right now.")
+    printc("Valid reasons you might do this:")
+    printc("1) You think you've messed up some local files and want to cleanly reset to what's on github.")
+    printc("2) You want to undo some unsaved changes to a memory card.")
+    printc("3) There's an update to this program's source code, and you'd like to install it.\n")
+    printc("WARNING: any unsaved game data that hasn't been uploaded to github will be deleted!\n", Fore.RED)
+
+    print("Do you want to hard reset?")
+    ans = input("[Y or N]: ")
+    if isYes(ans):
+        print("Are you sure you want to hard reset your files? Enter Yes again to confirm.")
+        ans = input("Confirm [Y or N]:")
+        if isYes(ans):
+            printc("Hard reseting...")
+            api.hardReset()
+            printc("Hard reset complete!")
+            print("This application will now close. You can restart it afterwards to continue playing.")
+            pressAnyKey()
+            api.exit()
+            return
+        printc("Hard reset cancelled.")
+        pressAnyKey()
+    printc("Hard reset cancelled.")
+    pressAnyKey()
+
 def displayTitle(subtitle: str = ""):
     mainTitle = "YKK INDUSTRIES - ZA GAMECUBE MANAGER"
     underline = "=" * len(mainTitle)
@@ -293,7 +323,7 @@ def menu():
         ("Checkout a memory card", checkoutMemoryCard),
         ("Create a new memory card", createMemoryCard), #todo
         ("Save your changes", reviewChanges, "Done Playing?"),
-        ("Discard changes", reviewChanges), #todo
+        ("Hard Reset (!)", resetToRemote, "Other")
     ]
 
     done = False
@@ -321,7 +351,7 @@ def menu():
                 printc(" *  " + menu_opt[2], Fore.LIGHTBLUE_EX)
             optNumber += 1
             print(f"[{optNumber}] {optionTitle}")
-        print("[Q] Quit")
+        printc("[Q] Quit", Fore.CYAN)
         printc(warning, Fore.LIGHTYELLOW_EX)
 
         # handle user input

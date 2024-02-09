@@ -2,6 +2,7 @@ import git
 import os
 import json
 import time
+import sys
 
 REPO_URL = "https://github.com/webbben/memory-card-share.git"
 
@@ -218,3 +219,7 @@ def get_github_username() -> str:
     if username == "" or username == None:
         return "Player"
     return username
+
+def exit():
+    'exits the program'
+    sys.exit()
