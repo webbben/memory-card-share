@@ -251,7 +251,7 @@ def resetToRemote():
         ans = input("Confirm [Y or N]:")
         if isYes(ans):
             printc("Hard reseting...")
-            api.hardReset()
+            api.hard_reset()
             printc("Hard reset complete!")
             print("This application will now close. You can restart it afterwards to continue playing.")
             pressAnyKey()
@@ -278,6 +278,7 @@ def handleQuit():
     'handles quitting and leaving the menu'
     # returns True if quitting, False if not
     # make sure there are no unsaved changes
+    printc("Verifying data is saved...", Fore.LIGHTBLUE_EX)
     unsaved_changes = api.getModifiedMemoryCards()
     if len(unsaved_changes) > 0:
         clearScreen()
@@ -295,6 +296,7 @@ def handleQuit():
         return False
     
     # release any held locks - we can do this safely since there are no unsaved changes
+    printc("Releasing all locks...", Fore.LIGHTBLUE_EX)
     success = api.releaseAllUserLocks()
     if not success:
         clearScreen()
@@ -306,10 +308,13 @@ def handleQuit():
 def bannerLogic():
     # check if the user has memory cards checked out
     # todo
-    # check if there are changes in the remote repo
-    remote_changes_count = len(api.checkForRemoteChanges())
-    if remote_changes_count > 0:
-        return (f"There are remote changes ({remote_changes_count}). You should pull these to stay up to date.", Fore.YELLOW)
+    # check if there are corrupted/unexpectedly changed files
+    changed_files = api.getLocalScriptChanges()
+    if len(changed_files) > 0:
+        return ("Files in your scripts directory seem to have changed. If you aren't coding new features, it's strongly advised you hard reset.", Fore.YELLOW)
+    changed_files = api.getLocalUnexpectedChanges()
+    if len(changed_files) > 0:
+        return ("There are unexpected changes in your local files. If you didn't make purposeful changes, consider hard resetting.")
     username = api.get_github_username()
     # warn user if they don't have a username yet
     if username == "Player":
@@ -351,7 +356,7 @@ def menu():
                 printc(" *  " + menu_opt[2], Fore.LIGHTBLUE_EX)
             optNumber += 1
             print(f"[{optNumber}] {optionTitle}")
-        printc("\n[Q] Quit", Fore.CYAN)
+        printc("[Q] Quit", Fore.CYAN)
         printc(warning, Fore.LIGHTYELLOW_EX)
 
         # handle user input

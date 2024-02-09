@@ -152,28 +152,54 @@ def getMemoryCardInfo():
 
 def getModifiedMemoryCards():
     'returns a list of memory cards that have changes'
-    repo = git.Repo(get_project_root())
-    repo.remotes.origin.fetch()
+    changed_files = find_local_changes_in_folder("memory-cards")
+    return changed_files
 
-    # check for changed memory cards among the modified files
-    changedFiles = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
-    memoryCards = [file.split('memory-cards')[1] for file in changedFiles if 'memory-cards' in file]
+def getLocalScriptChanges():
+    'checks if there are local changes to the script directory and returns the changed file names'
+    changed_files = find_local_changes_in_folder("script")
+    return changed_files
 
-    return memoryCards
-
-
-def hardReset():
-    '''hard resets the local version of the repo with what's on the remote repo.
-
-    this should only be done as a last resort, if some conflict has happened that's unresolvable between
-    the remote and local repos.
-    '''
+def getLocalUnexpectedChanges():
+    'checks if there are any changes in any place outside of the memory-cards directory'
+    changed_files = find_local_unexpected_changes()
+    return changed_files
 
 # =========================================================
 #
 # General Utils
 #
 # =========================================================
+
+def find_local_changes_in_folder(folderName: str):
+    'checks if there are local changes in the given directory, and returns the changed file names.'
+    repo = git.Repo(get_project_root())
+    repo.remotes.origin.fetch()
+
+    # check for changed files with the given folder name among the modified files
+    changedFiles = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
+    return [file.split(folderName)[1] for file in changedFiles if folderName in file]
+
+def find_local_unexpected_changes():
+    'checks if there are local changes outside of the memory-cards folder in general.'
+    repo = git.Repo(get_project_root())
+    repo.remotes.origin.fetch()
+
+    # check for changed files with the given folder name among the modified files
+    changedFiles = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
+    return [file for file in changedFiles if 'memory-cards' not in file]
+
+def hard_reset():
+    '''hard resets the local version of the repo with what's on the remote repo.
+
+    this should only be done as a last resort, if some conflict has happened that's unresolvable between
+    the remote and local repos.
+    '''
+    repo = getRepo()
+    repo.remotes.origin.fetch()
+
+    remote_commit = repo.remotes.origin.refs.master.commit
+    repo.head.reset(commit=remote_commit, working_tree=True)
 
 def does_file_exist_remote(remote_path: str) -> bool:
     'checks if the given file exists in the remote repo'
@@ -188,9 +214,17 @@ def does_file_exist_remote(remote_path: str) -> bool:
         return False
 
 def push_to_github(commitMessage: str):
-    'pushes all changes to github'
+    'pushes all memory card changes to github'
     repo = getRepo()
-    repo.git.add(all=True)
+
+    # find modified memory card files
+    modified_files = [item.a_path for item in repo.index.diff(None)]
+    memory_card_files = [file for file in modified_files if '/memory-cards' in file]
+    if len(memory_card_files) == 0:
+        return
+    
+
+    repo.git.add(memory_card_files)
     repo.index.commit(commitMessage)
     repo.git.push()
 
