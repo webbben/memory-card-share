@@ -263,4 +263,4 @@ This starts up the menu so you can get started!
 
 Here's a brief description of each menu:
 
-TODO - add more details for each option
+TODO - add more details for each option if needed.
