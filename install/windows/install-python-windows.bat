@@ -1,5 +1,10 @@
 @echo off
 
+echo == DEPENDENCY INSTALLER - WINDOWS ==
+echo This is the dependency installer for windows. If you're not on a windows machine, you done goofed.
+echo We'll install Python, pip, pipenv, and git once you're ready.
+pause
+
 REM Install Python 3
 where python3 >nul 2>nul
 if %errorlevel% neq 0 (
