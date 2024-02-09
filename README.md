@@ -11,6 +11,10 @@ Below you'll find these main sections:
 
 These instructions assume that you've never used Python, git, github etc before. If you have, then some (or all) of this may already be taken care of.
 
+${{\color{Goldenrod}\Huge{\textsf{  Windows\ Setup\ Wizard!\ \}}}}\$
+
+If you use windows, then you should be able to run a setup wizard to handle all this stuff! Go to the [/install](https://github.com/webbben/memory-card-share/tree/master/install) folder and follow the instructions there.
+
 I'll split this into the following sections:
 
 -   [How to install this program's dependencies](#installing-the-dependencies)
@@ -259,11 +263,4 @@ This starts up the menu so you can get started!
 
 Here's a brief description of each menu:
 
--   View all memory cards - shows you the existing memory cards to choose from
--   Checkout a memory card - lets you reserve a memory card so you can start playing with it
--   Create a new memory card - dialog to walk through creating a new memory card
--   Save your changes - run this to save your memory card changes!
--   Discard changes - run this to revert your (unsaved) changes back to the version on github
--   Quit - quit
-
-TODO - add more details for each option and how to use them.
+TODO - add more details for each option
