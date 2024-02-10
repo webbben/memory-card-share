@@ -12,12 +12,15 @@ def getRepo() -> git.Repo:
     repo = git.Repo(repo_path)
     return repo
 
-def refreshMemoryCardData():
+def refreshMemoryCardData() -> bool:
     'reloads memory card data from github. Note: only does this if there are no unsaved local changes.'
     # we don't want to automatically save unsaved memory card changes here, so give up on refreshing
     if len(getModifiedMemoryCards()) > 0:
-        return
+        return False
+    if len(getLocalUnexpectedChanges()) > 0:
+        return False
     loadMemoryCardData()
+    return True
 
 def createNewMemoryCard(cardName: str) -> bool:
     # make the new card's folder
@@ -117,16 +120,8 @@ def saveMemoryCardChanges(msg: str = ""):
 
 def loadMemoryCardData():
     'Pulls memory card data from the remote repository to local. If there is a merge conflict, the remote will be preferred.'
-    repo_path = get_project_root()
-    repo = git.Repo(repo_path)
-
-    # first, make sure local changes are committed
-    if repo.is_dirty(untracked_files=True):
-        repo.git.add(all=True)
-        repo.index.commit("save local changes before merging")
-
-    # if there's an unsolvable conflict, we will prefer 'theirs' (i.e. the remote's version of the file)
-    repo.remotes.origin.pull(strategy_option='theirs')
+    # todo - add some guardrails to make sure we aren't committing anything we don't want to?
+    pull_from_github()
 
 def getMemoryCardInfo():
     'Gets all the memory cards currently accessible on the machine'
@@ -151,7 +146,7 @@ def getMemoryCardInfo():
     return output
 
 def getModifiedMemoryCards():
-    'returns a list of memory cards that have changes'
+    'returns a list of memory card files that have changes'
     changed_files = find_local_changes_in_folder("memory-cards")
     return changed_files
 
@@ -223,26 +218,30 @@ def does_file_exist_remote(remote_path: str) -> bool:
     except KeyError:
         return False
 
+def pull_from_github():
+    'forcibly pulls from github. if there are uncommitted local changes, those are automatically committed. if there are merge conflicts, remote is preferred.'
+    repo = getRepo()
+
+    # first, make sure local changes are committed
+    if repo.is_dirty(untracked_files=True):
+        repo.git.add(all=True)
+        repo.index.commit("save local changes before merging")
+
+    # if there's an unsolvable conflict, we will prefer 'theirs' (i.e. the remote's version of the file)
+    repo.remotes.origin.pull(strategy_option='theirs')
+
 def push_to_github(commitMessage: str):
     'pushes all memory card changes to github'
-    repo = getRepo()
-    repo.remotes.origin.fetch()
-
-    # find modified memory card files
-    modified_files = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
-    memory_card_files = [file for file in modified_files if 'memory-cards' in file]
+    memory_card_files = getModifiedMemoryCards()
     if len(memory_card_files) == 0:
-        input("no files found")
         return
 
+    repo = getRepo()
     for file in memory_card_files:
         repo.git.add(file)
         print(file)
-    input("added files")
     repo.index.commit(commitMessage)
-    input("committed")
     repo.git.push()
-    input("push done")
 
 def get_project_root():
     'gets the absolute path for our project root directory'
@@ -278,3 +277,7 @@ def get_github_username() -> str:
 def exit():
     'exits the program'
     sys.exit()
+
+def restart():
+    'restarts the program'
+    os.execl(sys.executable, sys.executable, *sys.argv)

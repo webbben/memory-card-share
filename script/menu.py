@@ -261,9 +261,9 @@ def resetToRemote():
             printc("Hard reseting...")
             api.hard_reset()
             printc("Hard reset complete!")
-            print("This application will now close. You can restart it afterwards to continue playing.")
+            print("This application will now restart.")
             pressAnyKey()
-            api.exit()
+            api.restart()
             return
         printc("Hard reset cancelled.")
         pressAnyKey()
@@ -317,13 +317,22 @@ def bannerLogic():
     # check if there are corrupted/unexpectedly changed files
     changed_files = api.getLocalScriptChanges()
     if len(changed_files) > 0:
-       return ("Files in your scripts directory seem to have changed.\nIf you aren't coding new features, you should probably hard reset.", Fore.YELLOW)
+       return ("Files in your scripts directory seem to have changed.\nIf you aren't coding new features, please do a hard reset.", Fore.YELLOW)
     changed_files = api.getLocalUnexpectedChanges()
     if len(changed_files) > 0:
-        return ("There are unexpected changes in your local files.\nIf you didn't make purposeful changes, consider hard resetting.", Fore.YELLOW)
+        return ("There are unexpected changes in your local files.\nTo avoid pushing them to github, please do a hard reset.", Fore.YELLOW)
+    
+    # load data, or complain if there's unsaved local data
+    success = api.refreshMemoryCardData()
+    if not success:
+        return ("It seems you have unsaved memory card changes from your last session. Please save those, and refrain from closing this app before saving next time :)", Fore.YELLOW)
+
+    # check if user's git config is valid
     git_config_status = api.verifyGitConfig()
     if git_config_status[0] == False:
         return (f"Your git config appears to be missing a value for {git_config_status[1]}.\nRefer to the git setup instructions to correct this.", Fore.YELLOW)
+    
+    # welcome the user
     username = api.get_github_username()
     return (f"Welcome, {username}", Fore.MAGENTA)
 
