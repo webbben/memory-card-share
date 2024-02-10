@@ -153,6 +153,7 @@ def createMemoryCard():
         ans = input("Confirm creation? [Y or N]: ")
         if isYes(ans):
             # todo: create new memory card
+            print("TODO - this isn't actually implemented yet...")
             printc(f"\nMemory card {name} created!", Fore.GREEN)
             printc("\nMake sure to configure Dolphin to use the created folder now:")
             print(api.get_memory_card_full_path(name))
@@ -203,6 +204,13 @@ def reviewChanges():
     # attempt to save
     api.saveMemoryCardChanges()
     printc("Save successful!", Fore.GREEN)
+    printc("\nUnlock your memory cards?")
+    ans = input("[Y or N]: ")
+    if isYes(ans):
+        api.releaseAllUserLocks()
+        printc("all memory cards unlocked!", Fore.GREEN)
+    else:
+        printc("memory cards left locked. Don't forget to unlock them before closing this app!", Fore.YELLOW)
     pressAnyKey()
 
 def discardChanges():
@@ -265,7 +273,7 @@ def resetToRemote():
 def displayTitle(subtitle: str = ""):
     mainTitle = "YKK INDUSTRIES - ZA GAMECUBE MANAGER"
     underline = "=" * len(mainTitle)
-    printc(mainTitle, Fore.BLUE)
+    printc(mainTitle, Fore.GREEN)
     if subtitle != "":
         # center the subtitle, if possible
         padding = ""
