@@ -183,7 +183,7 @@ def find_local_changes_in_folder(folderName: str):
 
     # check for changed files with the given folder name among the modified files
     changedFiles = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
-    return [file.split(folderName)[1] for file in changedFiles if folderName in file]
+    return [file for file in changedFiles if folderName in file]
 
 def find_local_unexpected_changes():
     'checks if there are local changes outside of the memory-cards folder in general.'
@@ -239,7 +239,6 @@ def push_to_github(commitMessage: str):
     repo = getRepo()
     for file in memory_card_files:
         repo.git.add(file)
-        print(file)
     repo.index.commit(commitMessage)
     repo.git.push()
 
