@@ -232,11 +232,15 @@ def push_to_github(commitMessage: str):
     memory_card_files = [file for file in modified_files if 'memory-cards' in file]
     if len(memory_card_files) == 0:
         return
-    
 
-    repo.git.add(memory_card_files)
+    for file in memory_card_files:
+        repo.git.add(file)
+        print(file)
+    input("added files")
     repo.index.commit(commitMessage)
+    input("committed")
     repo.git.push()
+    input("push done")
 
 def get_project_root():
     'gets the absolute path for our project root directory'
