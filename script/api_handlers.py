@@ -226,11 +226,13 @@ def does_file_exist_remote(remote_path: str) -> bool:
 def push_to_github(commitMessage: str):
     'pushes all memory card changes to github'
     repo = getRepo()
+    repo.remotes.origin.fetch()
 
     # find modified memory card files
-    modified_files = [item.a_path for item in repo.index.diff(None)]
+    modified_files = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
     memory_card_files = [file for file in modified_files if 'memory-cards' in file]
     if len(memory_card_files) == 0:
+        input("no files found")
         return
 
     for file in memory_card_files:
