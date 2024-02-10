@@ -15,7 +15,7 @@ Most of you use Windows, so more effort has gone into streamlining this process 
 3. Midway through this script, you'll need to get your github personal access token. Follow the instructions for [generating a personal access token](#personal-access-token) and return to the script. You can ignore the other steps that are after generating the personal access token, because this script will handle them for you.
     - once you have the personal access token setup, git will handle authenticating with your github account whenever our program executes git commands
 4. If everything appears to have executed correctly... you should be done now!  There should be a folder on your desktop named "ZA GAMECUBE MANAGER". In there, run the batch script called `run-windows.bat`.
-   * If you think there were problems or errors during installation or, take a look at the "Common Issues" section at the very bottom of this readme. There I'll be documenting problems that other windows users have had during installation, and possible solutions.
+   * If you think there were problems or errors during installation or, take a look at the [Common Issues](#common-issues) section at the very bottom of this readme. There I'll be documenting problems that other windows users have had during installation, and possible solutions.
 
 ### Mac
 
@@ -260,3 +260,18 @@ From here, you can run the program by running the run-<os> file corresponding to
 Windows: `run-windows.bat`
 
 Unix-like OS: `run-unix.sh`
+
+
+# Common Issues
+Below are some issues that have been encountered by folks while installing.
+
+## Windows
+
+### Python
+For whatever reason, it seems that Python installs weirdly on Windows 11. Here are some of the problems:
+* the command `python` isn't recognized in the terminal.
+  * this implies the system PATH variable doesn't include the path to the python executable.
+  * try this: https://www.geeksforgeeks.org/how-to-add-python-to-windows-path/
+  * don't forget to reboot your computer and open a new terminal session after fixing
+* python is installed in a weird place (the windows store directory?) and/or python opens the windows store when its command is called.
+  * I'm not very clear on the details of this, but I believe both Braden and Luke have encountered this. Ask them for more details.
