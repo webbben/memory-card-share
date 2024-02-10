@@ -229,7 +229,7 @@ def push_to_github(commitMessage: str):
 
     # find modified memory card files
     modified_files = [item.a_path for item in repo.index.diff(None)]
-    memory_card_files = [file for file in modified_files if '/memory-cards' in file]
+    memory_card_files = [file for file in modified_files if 'memory-cards' in file]
     if len(memory_card_files) == 0:
         return
     
