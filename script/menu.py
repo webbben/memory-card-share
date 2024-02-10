@@ -132,32 +132,32 @@ def createMemoryCard():
         printc("\nMemory card creation dialog - Enter \"Q\" to quit at any time\n")
         
         # name of memory card
-        print("Enter a name for the new memory card. Don't include any special characters - letters and numbers only please!")
+        print("Enter a name for the new memory card.")
+        print("Note: special characters will be stripped, and spaces will be converted to dashes to make names code-friendly.")
         valid = False
         while not valid:
             name = input("Name: ")
-            if name == "":
-                # quit if they enter nothing, in case they don't know how to leave
+            if name == "" or isQuit(name):
+                printc("Memory card creation cancelled.")
+                pressAnyKey()
                 return
-            if len(name) > 15:
-                printc(f"Name is too long ({len(name)} chars). Name should be 15 chars or less.", Fore.YELLOW)
+            if len(name) > 25:
+                printc(f"Name is too long ({len(name)} chars). Name should be 25 chars or less.", Fore.YELLOW)
                 continue
             if name in cardNames:
                 printc(f"Name \"{name}\" is already taken.", Fore.YELLOW)
                 continue
-            # todo - validate name so no special characters are included
             valid = True
         
         clearScreen()
         print("Chosen name for memory card: " + colorStr(name, Fore.GREEN))
         ans = input("Confirm creation? [Y or N]: ")
         if isYes(ans):
-            # todo: create new memory card
-            print("TODO - this isn't actually implemented yet...")
-            printc(f"\nMemory card {name} created!", Fore.GREEN)
+            realName = api.createNewMemoryCard(name)
+            printc(f"\nMemory card {realName} created!", Fore.GREEN)
             printc("\nMake sure to configure Dolphin to use the created folder now:")
-            print(api.get_memory_card_full_path(name))
-            printc("\n(Note: you will probably need to point to the JPN/region's subfolder)")
+            print(api.get_memory_card_full_path(realName))
+            printc("\n(Note: you will probably need to point to the JPN or other region's subfolder)")
             pressAnyKey()
             return
         printc("Memory card creation cancelled.")

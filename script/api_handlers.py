@@ -22,13 +22,18 @@ def refreshMemoryCardData() -> bool:
     loadMemoryCardData()
     return True
 
-def createNewMemoryCard(cardName: str) -> bool:
+def createNewMemoryCard(cardName: str) -> str:
+    'creates a new memory card and its required sub-folders'
+    # first, clean the input name in case it has bad characters
+    cardName = cardName.replace(" ", "-") # replace spaces with dashes
+    cardName = ''.join(c for c in cardName if (c.isalnum() or c == "-")) # remove non alphanumeric characters
     # make the new card's folder
     newCardPath = get_memory_card_full_path(cardName)
     os.mkdir(newCardPath)
     # make JPN and ENG
     os.mkdir(os.path.join(newCardPath, "JPN"))
     os.mkdir(os.path.join(newCardPath, "USA"))
+    return cardName
 
 def checkForRemoteChanges():
     '''returns list of memory cards/files that have changed in the remote, and have yet to be pulled to local'''
