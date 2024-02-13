@@ -33,19 +33,9 @@ def createNewMemoryCard(cardName: str) -> str:
     # make JPN and ENG
     os.mkdir(os.path.join(newCardPath, "JPN"))
     os.mkdir(os.path.join(newCardPath, "USA"))
+    # write meta data
+    write_json(os.path.join(newCardPath, "meta.json"), { "creator": get_github_username() })
     return cardName
-
-def checkForRemoteChanges():
-    '''returns list of memory cards/files that have changed in the remote, and have yet to be pulled to local'''
-    repo = getRepo()
-    repo.remotes.origin.fetch()
-
-    # compare local files to remote
-    local_commit = repo.head.commit
-    remote_commit = repo.commit("origin/master")
-    diff = repo.git.diff(f"{local_commit.hexsha}..{remote_commit.hexsha}", "--name-only").splitlines()
-    changed_cards = [item for item in diff if 'memory-cards' in item]
-    return changed_cards
 
 def lockMemoryCard(cardName: str) -> bool:
     'puts a lock on a memory card on github. returns true if successful, or false if the card is already locked.'
@@ -61,9 +51,8 @@ def lockMemoryCard(cardName: str) -> bool:
         "lock_holder": username,
         "held_since": int(time.time())
     }
-    with open(path, 'w') as json_file:
-        json.dump(lock_data, json_file, indent=2)
-    
+    write_json(path, lock_data)
+
     # push the lock json to github
     push_to_github(f"{username}: Locked {cardName}")
     return True
@@ -107,6 +96,14 @@ def unlockMemoryCard(cardName: str) -> bool:
     try:
         # Attempt to remove the lock.json file
         os.remove(path)
+        # update meta data
+        meta_data_path = os.path.join(get_memory_card_full_path(cardName), 'meta.json')
+        meta_data = read_json(meta_data_path)
+        if meta_data == None:
+            meta_data = {}
+        meta_data["last_used_by"] = get_github_username()
+        meta_data["last_used_time"] = time.time()
+        write_json(meta_data_path, meta_data)
         return True
     except FileNotFoundError:
         # its already unlocked?
@@ -139,12 +136,11 @@ def getMemoryCardInfo():
             continue
 
         # check if the card is locked
-        json_files = [file for file in os.listdir(cardDirPath) if file.endswith('.json')]
+        json_files = [file for file in os.listdir(cardDirPath) if file.endswith('lock.json')]
         lock_data = None
         if len(json_files) > 0:
             json_path = os.path.join(cardDirPath, json_files[0])
-            with open(json_path, 'r') as json_file:
-                lock_data = json.load(json_file)
+            lock_data = read_json(json_path)
         
         output.append((cardDir, lock_data))
     
@@ -180,6 +176,15 @@ def verifyGitConfig():
 # General Utils
 #
 # =========================================================
+
+def remote_has_changes():
+    'checks if there are remote changes by comparing the commit hashes'
+    repo = getRepo()
+    repo.remotes.origin.fetch()
+    remote_branch_commit = repo.remote().refs.master.commit
+    local_branch_commit = repo.head.commit
+    # if the hashes aren't the same, then there are remote changes (since all local commits are immediately uploaded to github)
+    return remote_branch_commit != local_branch_commit
 
 def find_local_changes_in_folder(folderName: str):
     'checks if there are local changes in the given directory, and returns the changed file names.'
@@ -240,7 +245,10 @@ def push_to_github(commitMessage: str):
     memory_card_files = getModifiedMemoryCards()
     if len(memory_card_files) == 0:
         return
-
+    
+    # pull in remote changes before pushing, or else an error can occur
+    if remote_has_changes():
+        pull_from_github()
     repo = getRepo()
     for file in memory_card_files:
         repo.git.add(file)
@@ -285,3 +293,16 @@ def exit():
 def restart():
     'restarts the program'
     os.execl(sys.executable, sys.executable, *sys.argv)
+
+def write_json(path, data):
+    'writes a json to a file at the given path, with the given data'
+    with open(path, 'w') as json_file:
+        json.dump(data, json_file, indent=2)
+
+def read_json(path):
+    'reads a json at the given path and returns its data, if it exists'
+    if not os.path.exists(path):
+        return None
+    with open(path, 'r') as file:
+        data = json.load(file)
+    return data
