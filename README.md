@@ -16,7 +16,7 @@ To start this program, run the "run" file for your OS. This will be `run-windows
 
 This starts up the menu so you can get started!
 
-![image](https://github.com/webbben/memory-card-share/assets/38891424/853eb916-6a70-46b8-90e6-e834db2b3cdc)
+<img width="292" alt="image" src="https://github.com/webbben/memory-card-share/assets/38891424/fc737b91-3476-4a5f-8cc5-42fb3d61eb48">
 
 ## General flow of use
 This application is meant to make sure more than one person isn't playing on a memory card at the same time. This is because that will likely cause data corruption or data loss (one person overwrites the other's data).
