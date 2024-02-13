@@ -17,22 +17,30 @@ def displayMemoryCardReport(lineNumbers = False) -> list:
     currentTime = datetime.utcnow()
     longLock = False
     i = 0
-    for (name, lock_info) in memoryCardInfo:
+    for (name, lock_info, meta_data) in memoryCardInfo:
         i += 1
         if lock_info == None:
+            padding = "  " # padding is for the meta data on the second line
             if lineNumbers:
+                padding += "  "
                 printc(f"[{i}] {name}", Fore.LIGHTGREEN_EX)
             else:
                 printc(name, Fore.LIGHTGREEN_EX)
+            # add meta data info, if present
+            if meta_data:
+                last_user = None
+                time_since = None
+                if "last_used_by" in meta_data:
+                    last_user = meta_data["last_used_by"]
+                if "last_used_time" in meta_data:
+                    timestamp = meta_data["last_used_time"]
+                    time_since = timeSince(timestamp)
+                if last_user and time_since:
+                    printc(f"{padding}Last use: {last_user}, {time_since} ago", Fore.LIGHTBLUE_EX)
         else:
             lock_holder = lock_info["lock_holder"]
-            held_since = datetime.utcfromtimestamp(int(lock_info["held_since"]))
-            time_diff = currentTime - held_since
-            hours, remainder = divmod(time_diff.total_seconds(), 3600)
-            hours = round(hours)
-            minutes, _ = divmod(remainder, 60)
-            minutes = round(minutes)
-            timeStr = f"{hours}h {minutes}m" if hours > 0 else f"{minutes}m"
+            held_since = int(lock_info["held_since"])
+            timeStr = timeSince(held_since)
             color = Fore.RED
             # modify display if its locked by the current user
             if lock_holder == username:
@@ -42,14 +50,36 @@ def displayMemoryCardReport(lineNumbers = False) -> list:
                 printc(f"[{i}] {name} [Locked by {lock_holder} for {timeStr}]", color)
             else:
                 printc(f"{name} [Locked by {lock_holder} for {timeStr}]", color)
-            if hours > 2:
+            if "h" in timeStr:
                 longLock = True
     
     if longLock:
         printc("\nIf a memory card has been locked for a long time, consider contacting the person holding the lock.")
         printc("If you're holding a lock and you're done with it, go to the \"Save your changes\" or \"Discard changes\" menu.")
     return memoryCardInfo
-        
+
+def formatDate(timestamp: float) -> str:
+    'formats a given timestamp as a human readable date'
+    dt_obj = datetime.fromtimestamp(timestamp)
+    formatted_date = dt_obj.strftime('%m/%d/%y')
+    return formatted_date
+
+def timeSince(timestamp: float) -> str:
+    'calculates the approximate time elapsed since the given timestamp, and gives it in a readable string'
+    dt_obj = datetime.fromtimestamp(timestamp)
+    current_time = datetime.now()
+
+    time_diff = current_time - dt_obj
+    days = time_diff.days
+    if days > 0:
+        return f"{days}d"
+    hours, remainder = divmod(time_diff.seconds, 3600)
+    minutes, _ = divmod(remainder, 60)
+    if hours >= 5:
+        return f"{hours}h"
+    if hours > 0:
+        return f"{hours}h {minutes}m"
+    return f"{minutes}m"
 
 def checkoutMemoryCard():
     clearScreen()

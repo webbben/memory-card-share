@@ -62,7 +62,7 @@ def getUserLocks() -> list[str]:
     output = []
     cardInfo = getMemoryCardInfo()
     username = get_github_username()
-    for (cardName, lockInfo) in cardInfo:
+    for (cardName, lockInfo, _) in cardInfo:
         if lockInfo:
             if lockInfo["lock_holder"] == username:
                 output.append(cardName)
@@ -141,8 +141,15 @@ def getMemoryCardInfo():
         if len(json_files) > 0:
             json_path = os.path.join(cardDirPath, json_files[0])
             lock_data = read_json(json_path)
+
+        # check for meta data
+        json_files = [file for file in os.listdir(cardDirPath) if file.endswith('meta.json')]
+        meta_data = None
+        if len(json_files) > 0:
+            json_path = os.path.join(cardDirPath, json_files[0])
+            meta_data = read_json(json_path)
         
-        output.append((cardDir, lock_data))
+        output.append((cardDir, lock_data, meta_data))
     
     return output
 
