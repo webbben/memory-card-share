@@ -1,11 +1,12 @@
 import json
+import subprocess
 import os
 from pathlib import Path
 
 from colorama import Fore
 
 from script.api_handlers import read_json, write_json
-from script.utils import pressAnyKey, printc
+from script.utils import displayTitle, pressAnyKey, printc
 
 DOLPHIN_PATH_MAC = "/Applications/Dolphin.app/Contents/MacOS/Dolphin"
 DOLPHIN_PATH_WIN = "C:\\Program Files\\Dolphin\\Dolphin.exe"
@@ -51,10 +52,29 @@ def setCustomDolphinPath(dolphinPath: str):
     write_json(config_filename, config_data)
 
 def seeDolphinStatus():
+    displayTitle("Dolphin Emulator - Status")
     dolphinPath = getDolphinPath(True)
     if dolphinPath == "":
         printc("No Dolphin path found.", Fore.YELLOW)
         return
     printc("Dolphin path: " + dolphinPath, Fore.LIGHTBLUE_EX)
+    getDolphinVersion(dolphinPath)
     pressAnyKey()
-    
+
+def getDolphinVersion(dolphinPath: str):
+    if dolphinPath == "":
+        printc("Dolphin path not found.", Fore.YELLOW)
+        return 
+    result = subprocess.run(
+        [dolphinPath,"--version"],
+        capture_output=True,
+        text=True
+    ) 
+
+    output = result.stdout.strip() or result.stderr.strip()
+
+    if result.returncode != 0:
+        printc(f"Error running Dolphin: {output}", Fore.RED)
+        return
+
+    printc(f"Dolphin version: {output}")

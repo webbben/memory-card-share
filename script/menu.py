@@ -357,18 +357,6 @@ def resetToRemote():
     pressAnyKey()
 
 
-def displayTitle(subtitle: str = ""):
-    mainTitle = "YKK INDUSTRIES - ZA GAMECUBE MANAGER"
-    underline = "=" * len(mainTitle)
-    printc(mainTitle, Fore.GREEN)
-    if subtitle != "":
-        # center the subtitle, if possible
-        padding = ""
-        if len(subtitle) < len(mainTitle):
-            padding = round((len(mainTitle) - len(subtitle)) / 2) * " "
-        printc(padding + subtitle, Fore.CYAN)
-    print(underline + "\n")
-
 
 def handleQuit():
     "handles quitting and leaving the menu"
@@ -472,8 +460,13 @@ def menu(dolphinPath: str):
     while not done:
         clearScreen()
         lockedCards = api.getUserLocks()
+
         displayTitle()
+
         # display info banners, as needed
+        if dolphinPath != "":
+            printc("Dolphin Mode Enabled!", Fore.LIGHTGREEN_EX)
+            print("")
         if banner:
             printc(banner[0], banner[1])
             print("")

@@ -1,6 +1,19 @@
 import os
 from colorama import Fore, Style
 
+def displayTitle(subtitle: str = ""):
+    mainTitle = "YKK INDUSTRIES - ZA GAMECUBE MANAGER"
+    underline = "=" * len(mainTitle)
+    printc(mainTitle, Fore.GREEN)
+    if subtitle != "":
+        # center the subtitle, if possible
+        padding = ""
+        if len(subtitle) < len(mainTitle):
+            padding = round((len(mainTitle) - len(subtitle)) / 2) * " "
+        printc(padding + subtitle, Fore.CYAN)
+    print(underline + "\n")
+
+
 
 def pressAnyKey():
     print("")
