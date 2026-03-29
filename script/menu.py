@@ -1,7 +1,9 @@
 from colorama import Fore, Style
 import os
 from datetime import datetime
-import api_handlers as api
+from script.utils import * 
+import script.api_handlers as api
+from script.dolphin_cli import seeDolphinStatus
 
 
 def displayMemoryCardReport(lineNumbers=False) -> list:
@@ -181,6 +183,7 @@ def createMemoryCard():
             "Note: special characters will be stripped, and spaces will be converted to dashes to make names code-friendly."
         )
         valid = False
+        name = ""
         while not valid:
             name = input("Name: ")
             if name == "" or isQuit(name):
@@ -199,6 +202,11 @@ def createMemoryCard():
             valid = True
 
         clearScreen()
+        if name == "":
+            printc("No memory card name entered.")
+            pressAnyKey()
+            return
+        
         print("Chosen name for memory card: " + colorStr(name, Fore.GREEN))
         ans = input("Confirm creation? [Y or N]: ")
         if isYes(ans):
@@ -403,7 +411,7 @@ def handleQuit():
     return True
 
 
-def bannerLogic():
+def bannerLogic(dolphinPath: str):
     # check if there are corrupted/unexpectedly changed files
     changed_files = api.getLocalScriptChanges()
     if len(changed_files) > 0:
@@ -434,12 +442,19 @@ def bannerLogic():
             Fore.YELLOW,
         )
 
+    # check if dolphinPath is empty
+    if dolphinPath == "":
+        return (
+            "Failed to find the path to your dolphin executable file.",
+            Fore.YELLOW
+        )
+
     # welcome the user
     username = api.get_github_username()
     return (f"Welcome, {username}", Fore.MAGENTA)
 
 
-def menu():
+def menu(dolphinPath: str):
     "displays the main menu"
     menu_options = [
         ("View all memory cards", viewMemoryCards, "Memory Card Management"),
@@ -447,11 +462,12 @@ def menu():
         ("Create a new memory card", createMemoryCard),  # todo
         ("Save your changes", reviewChanges, "Done Playing?"),
         ("Hard Reset (!)", resetToRemote, "Other"),
+        ("See Dolphin Status", seeDolphinStatus),
     ]
 
     done = False
     warning = ""
-    banner = bannerLogic()
+    banner = bannerLogic(dolphinPath)
 
     while not done:
         clearScreen()
@@ -500,46 +516,4 @@ def menu():
     # display menu again
     return True
 
-
-# =========================================================
-#
-# General Utils
-#
-# =========================================================
-
-
-def pressAnyKey():
-    print("")
-    input(Fore.LIGHTMAGENTA_EX + "press any key to continue...")
-
-
-def clearScreen():
-    os.system("cls" if os.name == "nt" else "clear")
-
-
-def printc(s: str, color: str = Fore.MAGENTA):
-    print(color + s, Style.RESET_ALL)
-
-
-def colorStr(s: str, color: str):
-    "wraps the given string in the color formatting"
-    return color + s + Style.RESET_ALL
-
-
-def readInputNum(s: str):
-    try:
-        parsed_int = int(s)
-        return parsed_int
-    except:
-        return -1
-
-
-def isYes(s: str):
-    temp = s.lower()
-    return temp == "y" or temp == "yes"
-
-
-def isQuit(s: str):
-    temp = s.lower()
-    return temp == "q" or temp == "quit"
 

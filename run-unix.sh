@@ -1,5 +1,4 @@
 # !/bin/bash
 
-pipenv install --ignore-pipfile
-cd script
-pipenv run python3 main.py
+python3 -m pipenv install --ignore-pipfile
+python3 -m pipenv run python3 -m script.main

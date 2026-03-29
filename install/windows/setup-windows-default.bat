@@ -17,7 +17,7 @@ echo.
 
 echo Setting up pipenv development environment...
 cd %repoName%
-pipenv install
+python -m pipenv install
 echo Pipenv setup complete!
 echo.
 
