@@ -196,6 +196,7 @@ def remote_has_changes():
 def find_local_changes_in_folder(folderName: str):
     'checks if there are local changes in the given directory, and returns the changed file names.'
     repo = git.Repo(get_project_root())
+    # TODO: sometimes this randomly fails... is there a timeout or something?
     repo.remotes.origin.fetch()
 
     # check for changed files with the given folder name among the modified files

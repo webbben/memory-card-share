@@ -1,9 +1,9 @@
-from colorama import Fore, Style
-import os
+from colorama import Fore 
 from datetime import datetime
+from script.config import updateConfig
 from script.utils import * 
 import script.api_handlers as api
-from script.dolphin_cli import seeDolphinStatus
+from script.dolphin_cli import dolphinAutolaunchEnabled, runDolphin, seeDolphinStatus
 
 
 def displayMemoryCardReport(lineNumbers=False) -> list:
@@ -17,7 +17,6 @@ def displayMemoryCardReport(lineNumbers=False) -> list:
         pressAnyKey()
         return []
 
-    currentTime = datetime.utcnow()
     longLock = False
     i = 0
     for name, lock_info, meta_data in memoryCardInfo:
@@ -67,7 +66,6 @@ def displayMemoryCardReport(lineNumbers=False) -> list:
             'If you\'re holding a lock and you\'re done with it, go to the "Save your changes" or "Discard changes" menu.'
         )
     return memoryCardInfo
-
 
 def formatDate(timestamp: float) -> str:
     "formats a given timestamp as a human readable date"
@@ -399,7 +397,7 @@ def handleQuit():
     return True
 
 
-def bannerLogic(dolphinPath: str):
+def bannerLogic():
     # check if there are corrupted/unexpectedly changed files
     changed_files = api.getLocalScriptChanges()
     if len(changed_files) > 0:
@@ -430,32 +428,27 @@ def bannerLogic(dolphinPath: str):
             Fore.YELLOW,
         )
 
-    # check if dolphinPath is empty
-    if dolphinPath == "":
-        return (
-            "Failed to find the path to your dolphin executable file.",
-            Fore.YELLOW
-        )
-
     # welcome the user
     username = api.get_github_username()
     return (f"Welcome, {username}", Fore.MAGENTA)
 
 
-def menu(dolphinPath: str):
+def menu():
     "displays the main menu"
     menu_options = [
         ("View all memory cards", viewMemoryCards, "Memory Card Management"),
         ("Checkout a memory card", checkoutMemoryCard),
-        ("Create a new memory card", createMemoryCard),  # todo
+        ("Create a new memory card", createMemoryCard),
+        ("Play!", runDolphin),
         ("Save your changes", reviewChanges, "Done Playing?"),
         ("Hard Reset (!)", resetToRemote, "Other"),
+        ("Update Config", updateConfig),
         ("See Dolphin Status", seeDolphinStatus),
     ]
 
     done = False
     warning = ""
-    banner = bannerLogic(dolphinPath)
+    banner = bannerLogic()
 
     while not done:
         clearScreen()
@@ -464,9 +457,12 @@ def menu(dolphinPath: str):
         displayTitle()
 
         # display info banners, as needed
-        if dolphinPath != "":
-            printc("Dolphin Mode Enabled!", Fore.LIGHTGREEN_EX)
-            print("")
+        if dolphinAutolaunchEnabled():
+            printc("Dolphin Auto-launch Enabled!", Fore.LIGHTGREEN_EX)
+        else:
+            printc("Classic Mode (Launch Dolphin outside this app to play)", Fore.LIGHTMAGENTA_EX)
+            printc("(See Dolphin Status and Update Config to enable Dolphin Auto-launch.)", Fore.LIGHTBLACK_EX)
+        print("")
         if banner:
             printc(banner[0], banner[1])
             print("")

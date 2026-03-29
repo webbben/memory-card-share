@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from colorama import Fore, Style
 
 def displayTitle(subtitle: str = ""):
@@ -50,3 +51,6 @@ def isQuit(s: str):
     temp = s.lower()
     return temp == "q" or temp == "quit"
 
+def fileExists(path: str) -> bool:
+    f = Path(path)
+    return f.exists()
