@@ -1,8 +1,11 @@
+from colorama import Fore
 import git
 import os
 import json
 import time
 import sys
+
+from script.utils import printc
 
 REPO_URL = "https://github.com/webbben/memory-card-share.git"
 
@@ -187,7 +190,7 @@ def verifyGitConfig():
 def remote_has_changes():
     'checks if there are remote changes by comparing the commit hashes'
     repo = getRepo()
-    repo.remotes.origin.fetch()
+    git_fetch(repo)
     remote_branch_commit = repo.remote().refs.master.commit
     local_branch_commit = repo.head.commit
     # if the hashes aren't the same, then there are remote changes (since all local commits are immediately uploaded to github)
@@ -195,22 +198,33 @@ def remote_has_changes():
 
 def find_local_changes_in_folder(folderName: str):
     'checks if there are local changes in the given directory, and returns the changed file names.'
-    repo = git.Repo(get_project_root())
-    # TODO: sometimes this randomly fails... is there a timeout or something?
-    repo.remotes.origin.fetch()
-
-    # check for changed files with the given folder name among the modified files
-    changedFiles = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
+    changedFiles = get_local_changes()
     return [file for file in changedFiles if folderName in file]
 
 def find_local_unexpected_changes():
     'checks if there are local changes outside of the memory-cards folder in general.'
+    changedFiles = get_local_changes()
+    return [file for file in changedFiles if 'memory-cards' not in file]
+
+def get_local_changes() -> list[str]:
     repo = git.Repo(get_project_root())
-    repo.remotes.origin.fetch()
+    git_fetch(repo)
 
     # check for changed files with the given folder name among the modified files
-    changedFiles = [item.a_path for item in repo.index.diff(None)] + repo.untracked_files
-    return [file for file in changedFiles if 'memory-cards' not in file]
+    changedFiles = [item.a_path for item in repo.index.diff(None) if item.a_path != None] + repo.untracked_files
+    return changedFiles
+
+def git_fetch(repo: git.Repo):
+    try:
+        repo.remotes.origin.fetch()
+    except git.GitCommandError as err:
+        printc("Error running git fetch:", Fore.LIGHTRED_EX)
+        printGitCommandErr(err)
+        printc("We will try one more time, in case this is just a network hiccup...")
+        time.sleep(5)
+        repo.remotes.origin.fetch()
+        printc("(Looks like it resolved itself)", Fore.LIGHTGREEN_EX)
+        return
 
 def hard_reset():
     '''hard resets the local version of the repo with what's on the remote repo.
@@ -219,7 +233,7 @@ def hard_reset():
     the remote and local repos.
     '''
     repo = getRepo()
-    repo.remotes.origin.fetch()
+    git_fetch(repo)
 
     remote_commit = repo.remotes.origin.refs.master.commit
     repo.head.reset(commit=remote_commit, working_tree=True)
@@ -227,7 +241,7 @@ def hard_reset():
 def does_file_exist_remote(remote_path: str) -> bool:
     'checks if the given file exists in the remote repo'
     repo = getRepo()
-    repo.remotes.origin.fetch()
+    git_fetch(repo)
     remote_commit = repo.commit('origin/master')
     try:
         # Attempt to get the file from the remote commit
@@ -245,8 +259,18 @@ def pull_from_github():
         repo.git.add(all=True)
         repo.index.commit("save local changes before merging")
 
-    # if there's an unsolvable conflict, we will prefer 'theirs' (i.e. the remote's version of the file)
-    repo.remotes.origin.pull(strategy_option='theirs')
+    git_pull_remote(repo)
+    
+def git_pull_remote(repo: git.Repo):
+    try:
+        # if there's an unsolvable conflict, we will prefer 'theirs' (i.e. the remote's version of the file)
+        repo.remotes.origin.pull(strategy_option='theirs')
+    except git.GitCommandError as err:
+        printGitCommandErr(err)
+        printc("let's try one more time, in case it's a network hiccup...")
+        time.sleep(5)
+        repo.remotes.origin.pull(strategy_option='theirs')
+        printc("(Looks like it resolved itself)", Fore.LIGHTGREEN_EX)
 
 def push_to_github(commitMessage: str):
     'pushes all memory card changes to github'
@@ -261,7 +285,25 @@ def push_to_github(commitMessage: str):
     for file in memory_card_files:
         repo.git.add(file)
     repo.index.commit(commitMessage)
-    repo.git.push()
+
+    try:
+        repo.git.push()
+    except git.GitCommandError as err:
+        printGitCommandErr(err)
+        printc("let's give it another go, in case this is just a network hiccup...")
+        time.sleep(5)
+        repo.git.push()
+        printc("(Looks like it resolved itself)", Fore.LIGHTGREEN_EX)
+
+
+def printGitCommandErr(err: git.GitCommandError):
+    print(err.command)
+    printc(f"status: {err.status}", Fore.YELLOW)
+    if err.stderr != "":
+        printc(err.stderr, Fore.YELLOW)
+    if err.stdout != "":
+        printc(err.stdout, Fore.YELLOW)
+ 
 
 def get_project_root():
     'gets the absolute path for our project root directory'
@@ -292,7 +334,7 @@ def get_github_username() -> str:
     username = get_github_config_value("user", "name")
     if username == None:
         return "Player"
-    return username
+    return str(username)
 
 def exit():
     'exits the program'
