@@ -9,7 +9,6 @@ from script.config import getCustomDolphinPath, getRomPath
 from script.utils import clearScreen, displayTitle, isYes, pressAnyKey, printc
 
 DOLPHIN_PATH_MAC = "/Applications/Dolphin.app/Contents/MacOS/Dolphin"
-DOLPHIN_PATH_WIN = "C:\\Program Files\\Dolphin\\Dolphin.exe"
 
 def getDolphinPath(silent: bool) -> str:
     # first, check if a config file exists, and pull a custom dolphin path from there.
@@ -23,18 +22,28 @@ def getDolphinPath(silent: bool) -> str:
     if dolphinPath.exists():
         if not silent:
             printc("Standard dolphin path found (mac OS)", Fore.LIGHTBLACK_EX)
+            printc(DOLPHIN_PATH_MAC, Fore.LIGHTBLACK_EX)
         return DOLPHIN_PATH_MAC
-    dolphinPath = Path(DOLPHIN_PATH_WIN)
-    if dolphinPath.exists():
-        if not silent:
-            printc("Standard dolphin path found (win OS)", Fore.LIGHTBLACK_EX)
-        return DOLPHIN_PATH_WIN
-
+    
+    # attempt some random windows paths. I'm not sure if it installs to a standard path in windows though...
+    win_paths = [
+        r"C:\Program Files\Dolphin\Dolphin.exe",
+        r"C:\Program Files (x86)\Dolphin\Dolphin.exe",
+        r"D:\Dolphin-x64\Dolphin.exe",
+        r"C:\Dolphin-x64\Dolphin.exe",
+    ]
+    for p in win_paths:
+        dolphinPath = Path(p)
+        if dolphinPath.exists():
+            if not silent:
+                printc("Standard dolphin path found (win OS)", Fore.LIGHTBLACK_EX)
+                printc(p, Fore.LIGHTBLACK_EX)
+            return p 
+    
     # no dolphin paths found... 
     if not silent:
-        printc("No dolphin path discoverable", Fore.LIGHTYELLOW_EX)
+        printc("No dolphin path discoverable. Set the path to Dolphin in the config menu.", Fore.LIGHTYELLOW_EX)
     return ""
-
 
 def seeDolphinStatus():
     clearScreen()
@@ -71,7 +80,8 @@ def getDolphinVersion(dolphinPath: str):
     printc(f"Dolphin version: {output}")
 
 def runDolphin():
-    printc("(Note: this is still a WIP. Sorta works, sorta doesn't.)")
+    clearScreen()
+    displayTitle("Run Dolphin - Autolaunch!")
     dolphinPath = getDolphinPath(True)
     if dolphinPath == "":
         printc("No Dolphin path found.", Fore.YELLOW)
@@ -94,17 +104,27 @@ def runDolphin():
         return
     slotA = userLocks[0]
     
+    printc("Launch Dolphin directly from here!")
+    printc("Once you are done playing, simply close the Dolphin window. Your progress will be automatically saved, and your memory cards will be unlocked.")
+    printc("A quicker way to play, instead of having to bounce back and forth between here and Dolphin.", Fore.LIGHTBLACK_EX)
+    
     printc("Rom to launch: " + pathToRom, Fore.LIGHTGREEN_EX)
     printc("Memory card: " + slotA, Fore.LIGHTGREEN_EX)
     printc("(ensure this memory card is set to slot A in Dolphin!)", Fore.LIGHTBLACK_EX)
-    printc("Dolphin will launch directly from here. Once you are done playing, just close the Dolphin window.")
-    printc("After that, your changes will be automatically saved and your memory cards will be unlocked.")
     ans = input("Launch game? [Y or N]: ")
     if not isYes(ans):
         printc("Aborting game launch.")
         pressAnyKey()
         return
 
+    clearScreen()
+    displayTitle("Run Dolphin - Autolaunch!")
+    printc("Rom: " + pathToRom, Fore.LIGHTGREEN_EX)
+    printc("Memory card: " + slotA, Fore.LIGHTGREEN_EX)
+    print()
+    printc("Launching Dolphin...")
+    printc("Warning: Do NOT close this terminal while playing!", Fore.LIGHTRED_EX)
+    print("Once you are finished playing, close the Dolphin window, return here, and wait for your changes to finish saving.")
 
     args = [dolphinPath, "--exec", pathToRom, "-b"]
 
@@ -114,6 +134,8 @@ def runDolphin():
 
     if result.returncode != 0:
         printc(f"Error running Dolphin: {output}", Fore.RED)
+    else:
+        printc("Dolphin exited successfully.", Fore.LIGHTGREEN_EX)
 
     if len(getModifiedMemoryCards()) > 0:
         printc("Saving changes...")
@@ -123,7 +145,7 @@ def runDolphin():
 
     printc("Releasing all locks...")
     releaseAllUserLocks() 
-    printc("done!")
+    printc("Done!", Fore.GREEN)
     pressAnyKey()
 
 def dolphinAutolaunchEnabled() -> bool:

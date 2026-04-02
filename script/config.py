@@ -90,9 +90,17 @@ def updateConfig():
     if num == -1:
         return
     if num == 1:
-        dolphinPath = input("Enter Dolphin Path (empty to cancel): ")
+        printc("This option lets you set the path to your Dolphin executable file. If we don't automatically find it, then you'll have to set it here.")
+        print("(leave empty to cancel, or enter 'delete' to delete the existing path)")
+        dolphinPath = input("Dolphin Path: ")
+        dolphinPath = dolphinPath.strip().strip('""') # strip whitespace or surrounding quotes (windows adds quotes to paths I guess...)
         if dolphinPath == "":
-            printc("Aborted.")
+            printc("Canceled.")
+            pressAnyKey()
+            return
+        if dolphinPath == "delete":
+            printc("Deleted the currently set path.")
+            setCustomDolphinPath("")
             pressAnyKey()
             return
         if not fileExists(dolphinPath):
@@ -110,9 +118,17 @@ def updateConfig():
         pressAnyKey()
         return
     if num == 2:
-        romPath = input("Enter Rom Path (empty to cancel): ")
+        printc("This option lets you set the path to the rom you want to use with Dolphin. Probably gonna be the animal crossing rom.")
+        print("(leave empty to cancel, or enter 'delete' to delete the existing path)")
+        romPath = input("Rom Path: ")
+        romPath = romPath.strip().strip('""') 
         if romPath == "":
             printc("Aborted.")
+            pressAnyKey()
+            return
+        if romPath == "delete":
+            printc("Deleted the currently set path.")
+            setCustomDolphinPath("")
             pressAnyKey()
             return
         if not fileExists(romPath):
