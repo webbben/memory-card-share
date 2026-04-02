@@ -22,7 +22,6 @@ def getDolphinPath(silent: bool) -> str:
     if dolphinPath.exists():
         if not silent:
             printc("Standard dolphin path found (mac OS)", Fore.LIGHTBLACK_EX)
-            printc(DOLPHIN_PATH_MAC, Fore.LIGHTBLACK_EX)
         return DOLPHIN_PATH_MAC
     
     # attempt some random windows paths. I'm not sure if it installs to a standard path in windows though...
@@ -37,7 +36,6 @@ def getDolphinPath(silent: bool) -> str:
         if dolphinPath.exists():
             if not silent:
                 printc("Standard dolphin path found (win OS)", Fore.LIGHTBLACK_EX)
-                printc(p, Fore.LIGHTBLACK_EX)
             return p 
     
     # no dolphin paths found... 
