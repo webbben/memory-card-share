@@ -104,8 +104,8 @@ def runDolphin():
     
     printc("Launch Dolphin directly from here!")
     printc("Once you are done playing, simply close the Dolphin window. Your progress will be automatically saved, and your memory cards will be unlocked.")
-    printc("A quicker way to play, instead of having to bounce back and forth between here and Dolphin.", Fore.LIGHTBLACK_EX)
-    
+    printc("A quicker way to play, instead of having to jump back and forth between here and Dolphin.", Fore.LIGHTBLACK_EX)
+    print()
     printc("Rom to launch: " + pathToRom, Fore.LIGHTGREEN_EX)
     printc("Memory card: " + slotA, Fore.LIGHTGREEN_EX)
     printc("(ensure this memory card is set to slot A in Dolphin!)", Fore.LIGHTBLACK_EX)

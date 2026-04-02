@@ -218,9 +218,7 @@ def git_fetch(repo: git.Repo):
     try:
         repo.remotes.origin.fetch()
     except git.GitCommandError as err:
-        printc("Error running git fetch:", Fore.LIGHTRED_EX)
         printGitCommandErr(err)
-        printc("We will try one more time, in case this is just a network hiccup...")
         time.sleep(5)
         repo.remotes.origin.fetch()
         printc("(Looks like it resolved itself)", Fore.LIGHTGREEN_EX)
@@ -267,7 +265,6 @@ def git_pull_remote(repo: git.Repo):
         repo.remotes.origin.pull(strategy_option='theirs')
     except git.GitCommandError as err:
         printGitCommandErr(err)
-        printc("let's try one more time, in case it's a network hiccup...")
         time.sleep(5)
         repo.remotes.origin.pull(strategy_option='theirs')
         printc("(Looks like it resolved itself)", Fore.LIGHTGREEN_EX)
@@ -290,19 +287,20 @@ def push_to_github(commitMessage: str):
         repo.git.push()
     except git.GitCommandError as err:
         printGitCommandErr(err)
-        printc("let's give it another go, in case this is just a network hiccup...")
         time.sleep(5)
         repo.git.push()
         printc("(Looks like it resolved itself)", Fore.LIGHTGREEN_EX)
 
-
 def printGitCommandErr(err: git.GitCommandError):
-    print(err.command)
-    printc(f"status: {err.status}", Fore.YELLOW)
+    printc("Uh oh. Looks like there was an unexpected git error:")
+    printc("command: " + " ".join(err.command), Fore.LIGHTBLACK_EX)
+    printc(f"status: {err.status}", Fore.LIGHTBLACK_EX)
     if err.stderr != "":
-        printc(err.stderr, Fore.YELLOW)
+        printc(err.stderr, Fore.LIGHTBLACK_EX)
     if err.stdout != "":
-        printc(err.stdout, Fore.YELLOW)
+        printc(err.stdout, Fore.LIGHTBLACK_EX)
+    print()
+    printc("It's probably just a random network hiccup though. let's give it another go...")
  
 
 def get_project_root():
